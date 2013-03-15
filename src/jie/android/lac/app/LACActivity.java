@@ -11,6 +11,9 @@ import jie.android.lac.R;
 import jie.android.lac.fragment.ColorFragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 
 public class LACActivity extends SlidingFragmentActivity {
@@ -20,10 +23,29 @@ public class LACActivity extends SlidingFragmentActivity {
 		super.onCreate(savedInstanceState);
 		
 		this.setTitle(R.string.app_title);
-		this.getActionBar().setSubtitle(R.string.app_subtitle);
+		this.getSupportActionBar().setSubtitle(R.string.app_subtitle);
 		this.setContentView(R.layout.lac);
 		
 		initSlidingMenu();
+		
+		initViews();
+	}
+
+	private void initViews() {
+		Button b = (Button)this.findViewById(R.id.button1);
+		b.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				onButtonClick();
+			}
+			
+		});
+	}
+
+	protected void onButtonClick() {
+		this.getSlidingMenu().toggle();
+		this.getSlidingMenu().showSecondaryMenu(true);
 	}
 
 	private void initSlidingMenu() {
@@ -31,7 +53,7 @@ public class LACActivity extends SlidingFragmentActivity {
 		this.setBehindContentView(R.layout.lac_left);
 		this.setSlidingActionBarEnabled(false);
 		
-		SlidingMenu sm = this.getSlidingMenu(); new SlidingMenu(this);
+		SlidingMenu sm = this.getSlidingMenu(); //new SlidingMenu(this);
 		
 		sm.setMode(SlidingMenu.LEFT_RIGHT);
 		sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
@@ -42,6 +64,7 @@ public class LACActivity extends SlidingFragmentActivity {
 		sm.setFadeDegree(Configuration.Sliding.FADE_DEGREE);
 		sm.setSecondaryMenu(R.layout.lac_right);
 		sm.setSecondaryShadowDrawable(R.drawable.shadow);
+		
 		
 		replaceSlidingFragment(R.id.lac_left, new ColorFragment());
 		replaceSlidingFragment(R.id.lac_right, new ColorFragment());
