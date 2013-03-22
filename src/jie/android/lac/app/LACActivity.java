@@ -44,8 +44,11 @@ public class LACActivity extends SlidingFragmentActivity {
 	}
 
 	protected void onButtonClick() {
-		this.getSlidingMenu().toggle();
-		this.getSlidingMenu().showSecondaryMenu(true);
+//		this.getSlidingMenu().toggle();
+//		this.getSlidingMenu().showSecondaryMenu(true);
+		
+		replaceSlidingFragment(R.id.fragment1, new ColorFragment(R.color.red));
+
 	}
 
 	private void initSlidingMenu() {
@@ -63,9 +66,8 @@ public class LACActivity extends SlidingFragmentActivity {
 		sm.setFadeEnabled(Configuration.Sliding.FADE_ENABLED);		
 		sm.setFadeDegree(Configuration.Sliding.FADE_DEGREE);
 		sm.setSecondaryMenu(R.layout.lac_right);
-		sm.setSecondaryShadowDrawable(R.drawable.shadow);
-		
-		
+		sm.setSecondaryShadowDrawable(R.drawable.shadow);		
+				
 		replaceSlidingFragment(R.id.lac_left, new ColorFragment());
 		replaceSlidingFragment(R.id.lac_right, new ColorFragment());
 	}
