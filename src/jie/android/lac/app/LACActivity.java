@@ -9,6 +9,7 @@ import com.slidingmenu.lib.app.SlidingFragmentActivity;
 
 import jie.android.lac.R;
 import jie.android.lac.fragment.ColorFragment;
+import jie.android.lac.fragment.TestFragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.View;
@@ -47,7 +48,8 @@ public class LACActivity extends SlidingFragmentActivity {
 //		this.getSlidingMenu().toggle();
 //		this.getSlidingMenu().showSecondaryMenu(true);
 		
-		replaceSlidingFragment(R.id.fragment1, new ColorFragment(R.color.red));
+		//replaceSlidingFragment(R.id.fragment1, new ColorFragment(R.color.red));
+		replaceSlidingFragment(R.id.fragment1, new TestFragment());
 
 	}
 
