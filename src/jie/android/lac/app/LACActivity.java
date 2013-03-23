@@ -8,6 +8,7 @@ import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
 
 import jie.android.lac.R;
+import jie.android.lac.app.FragmentSwitcher.Frame;
 import jie.android.lac.fragment.ColorFragment;
 import jie.android.lac.fragment.TestFragment;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import android.widget.Button;
 
 public class LACActivity extends SlidingFragmentActivity {
 	
+	private FragmentSwitcher fragmentSwitcher = null;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -27,7 +30,9 @@ public class LACActivity extends SlidingFragmentActivity {
 		this.getSupportActionBar().setSubtitle(R.string.app_subtitle);
 		this.setContentView(R.layout.lac);
 		
-		initSlidingMenu();
+		 fragmentSwitcher = new FragmentSwitcher(this);
+		
+		initSlidingMenu();		
 		
 		initViews();
 	}
@@ -45,11 +50,17 @@ public class LACActivity extends SlidingFragmentActivity {
 	}
 
 	protected void onButtonClick() {
+		fragmentSwitcher.update(Frame.Welcome);
 //		this.getSlidingMenu().toggle();
 //		this.getSlidingMenu().showSecondaryMenu(true);
 		
 		//replaceSlidingFragment(R.id.fragment1, new ColorFragment(R.color.red));
-		replaceSlidingFragment(R.id.fragment1, new TestFragment());
+//		replaceSlidingFragment(R.id.lac, new TestFragment());
+//		
+//		SlidingMenu sm = this.getSlidingMenu(); //new SlidingMenu(this);
+//		
+//		sm.setMode(SlidingMenu.RIGHT);
+
 
 	}
 
@@ -70,8 +81,8 @@ public class LACActivity extends SlidingFragmentActivity {
 		sm.setSecondaryMenu(R.layout.lac_right);
 		sm.setSecondaryShadowDrawable(R.drawable.shadow);		
 				
-		replaceSlidingFragment(R.id.lac_left, new ColorFragment());
-		replaceSlidingFragment(R.id.lac_right, new ColorFragment());
+		replaceSlidingFragment(R.id.lac_left, new ColorFragment(R.color.green));
+		replaceSlidingFragment(R.id.lac_right, new ColorFragment(R.color.white));
 	}
 
 	private void replaceSlidingFragment(int id, Fragment fragment) {
