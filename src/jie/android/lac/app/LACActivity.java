@@ -8,7 +8,7 @@ import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
 
 import jie.android.lac.R;
-import jie.android.lac.app.FragmentSwitcher.Frame;
+import jie.android.lac.app.ContentSwitcher.Frame;
 import jie.android.lac.fragment.ColorFragment;
 import jie.android.lac.fragment.TestFragment;
 import android.os.Bundle;
@@ -20,7 +20,7 @@ import android.widget.Button;
 
 public class LACActivity extends SlidingFragmentActivity {
 	
-	private FragmentSwitcher fragmentSwitcher = null;
+	private ContentSwitcher contentSwitcher = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -30,11 +30,15 @@ public class LACActivity extends SlidingFragmentActivity {
 		this.getSupportActionBar().setSubtitle(R.string.app_subtitle);
 		this.setContentView(R.layout.lac);
 		
-		 fragmentSwitcher = new FragmentSwitcher(this);
+		 contentSwitcher = new ContentSwitcher(this);
 		
-		initSlidingMenu();		
+		initSlidingMenu();
 		
-		initViews();
+		initFrame();
+	}
+
+	private void initFrame() {
+		contentSwitcher.update(Frame.Welcome);
 	}
 
 	private void initViews() {
@@ -50,7 +54,7 @@ public class LACActivity extends SlidingFragmentActivity {
 	}
 
 	protected void onButtonClick() {
-		fragmentSwitcher.update(Frame.Welcome);
+		contentSwitcher.update(Frame.Welcome);
 //		this.getSlidingMenu().toggle();
 //		this.getSlidingMenu().showSecondaryMenu(true);
 		
@@ -112,6 +116,10 @@ public class LACActivity extends SlidingFragmentActivity {
 
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	public void updateFrame(Frame frame) {
+		contentSwitcher.update(frame);
 	}
 
 	
