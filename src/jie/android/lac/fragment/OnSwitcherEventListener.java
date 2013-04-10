@@ -2,6 +2,6 @@ package jie.android.lac.fragment;
 
 public interface OnSwitcherEventListener {
 
-	public boolean OnPrepareEnter();
-	public boolean OnPrepareExit();
+	public boolean onPrepareEnter();
+	public boolean onPrepareExit();
 }

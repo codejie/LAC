@@ -2,8 +2,9 @@ package jie.android.lac.app;
 
 import jie.android.lac.R;
 import jie.android.lac.fragment.ContentFragment;
-import jie.android.lac.fragment.SettingContent;
-import jie.android.lac.fragment.WelcomeContent;
+import jie.android.lac.fragment.DictionaryFragment;
+import jie.android.lac.fragment.SettingFragment;
+import jie.android.lac.fragment.WelcomeFragment;
 
 import android.support.v4.app.FragmentManager;
 
@@ -34,7 +35,7 @@ public class ContentSwitcher {
 	
 	private final SlidingFragmentActivity activity;
 
-	private Frame currentFrame = Frame.Welcome; 
+	private Frame currentFrame = null; 
 	private ContentFragment currentFragment = null;
 
 	public ContentSwitcher(final SlidingFragmentActivity activity) {
@@ -42,6 +43,9 @@ public class ContentSwitcher {
 	}
 	
 	public boolean update(final Frame frame) {
+		if(frame == currentFrame)
+			return true;
+		
 		if(!hideFragment(currentFragment)) {
 			return false;
 		}
@@ -56,6 +60,9 @@ public class ContentSwitcher {
 				break;
 			case Setting:
 				fragment = createSettingFrame();
+				break;
+			case Dictionary:
+				fragment = createDictionaryFrame();
 				break;
 			default:
 				return false;
@@ -72,20 +79,36 @@ public class ContentSwitcher {
 				
 		return true;
 	}
-
+	
+	public boolean remove(final Frame frame) {
+		if(frame == currentFrame) {
+			return false;
+		}
+		
+		ContentFragment fragment = (ContentFragment) this.activity.getSupportFragmentManager().findFragmentByTag(frame.getName());
+		if (fragment == null) {
+			return true;
+		}
+		
+		FragmentManager fm = this.activity.getSupportFragmentManager();
+		fm.beginTransaction().remove(fragment).commit();		
+		
+		return true;
+	}
+	
 	private void updataSlidingMenu(int slidingMode) {
 		SlidingMenu slidingmenu = this.activity.getSlidingMenu();
 		slidingmenu.setMode(slidingMode);
 	}
 
 	private boolean addFragment(final Frame frame, final ContentFragment fragment) {
-		if(fragment == null || !fragment.OnPrepareEnter()) {
+		if(fragment == null || !fragment.onPrepareEnter()) {
 			return false;
 		}
-				
+		
 		FragmentManager fm = this.activity.getSupportFragmentManager();
 		fm.beginTransaction().add(R.id.lac, fragment, frame.getName()).commit();
-				
+		
 		currentFrame = frame;
 		currentFragment = fragment;	
 		
@@ -110,7 +133,7 @@ public class ContentSwitcher {
 			return true;
 		}
 		
-		if(!fragment.OnPrepareExit()) {
+		if(!fragment.onPrepareExit()) {
 			return false;
 		}
 
@@ -120,15 +143,19 @@ public class ContentSwitcher {
 		currentFragment = null;
 		
 		return true;
-	}	
+	}
 	
 	private ContentFragment createWelcomeFrame() {
-		return new WelcomeContent();
+		return new WelcomeFragment();
 	}
 
 	private ContentFragment createSettingFrame() {
-		return new SettingContent();
+		return new SettingFragment();
 	}	
+	
+	private ContentFragment createDictionaryFrame() {
+		return new DictionaryFragment();
+	}
 	
 	public final Frame getCurrentFrame() {
 		return currentFrame;
