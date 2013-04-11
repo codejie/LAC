@@ -4,12 +4,14 @@ import jie.android.lac.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public abstract class ContentFragment extends SherlockFragment implements OnSwitcherEventListener {
 	
@@ -17,17 +19,22 @@ public abstract class ContentFragment extends SherlockFragment implements OnSwit
 	
 	private final int resourceId;
 	
+	public ContentFragment() {
+		this(-1);
+	}
+	
 	public ContentFragment(int resourceId) {
 		this.resourceId = resourceId;
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(resourceId, container, false);
-		
-		return v;
-		
-//		return super.onCreateView(inflater, container, savedInstanceState);
+		if (resourceId != -1) {
+			View v = inflater.inflate(resourceId, container, false);		
+			return v;
+		} else {
+			return super.onCreateView(inflater, container, savedInstanceState);
+		}
 	}
 	
 	

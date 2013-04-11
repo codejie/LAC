@@ -3,8 +3,8 @@ package jie.android.lac.app;
 import jie.android.lac.R;
 import jie.android.lac.fragment.ContentFragment;
 import jie.android.lac.fragment.DictionaryFragment;
-import jie.android.lac.fragment.SettingFragment;
 import jie.android.lac.fragment.WelcomeFragment;
+import jie.android.lac.fragment.WizardFragment;
 
 import android.support.v4.app.FragmentManager;
 
@@ -14,29 +14,36 @@ import com.slidingmenu.lib.app.SlidingFragmentActivity;
 public class ContentSwitcher {
 	
 	public enum Frame {
-		Welcome("welcome", SlidingMenu.LEFT), Dictionary("dictionary", SlidingMenu.LEFT_RIGHT), 
-		Memory("memory", SlidingMenu.LEFT_RIGHT), Setting("setting", SlidingMenu.LEFT_RIGHT);
+		Welcome("welcome", SlidingMenu.LEFT, true), Dictionary("dictionary", SlidingMenu.LEFT_RIGHT, false), 
+		Memory("memory", SlidingMenu.LEFT_RIGHT, false), Wizard("wizard", -1, true);
 		
 		private final String name;
 		private final int slidingMode;
-		private Frame(final String name, int mode) {
+		private final boolean removed;//remove if hided
+		private Frame(final String name, int mode, boolean removed) {
 			this.name = name;
 			this.slidingMode = mode;
+			this.removed = removed;
 		}
 		
 		public final String getName() {
 			return name;
 		}
 		
-		public final int getSlidingMode() {
+		public int getSlidingMode() {
 			return slidingMode;
+		}
+		
+		public boolean hasRemoved() {
+			return removed;
 		}
 	}
 	
 	private final SlidingFragmentActivity activity;
 
-	private Frame currentFrame = null; 
-	private ContentFragment currentFragment = null;
+	private Frame currentFrame = null;
+	
+	private Frame prevFrame = null;
 
 	public ContentSwitcher(final SlidingFragmentActivity activity) {
 		this.activity = activity;
@@ -46,23 +53,36 @@ public class ContentSwitcher {
 		if(frame == currentFrame)
 			return true;
 		
-		if(!hideFragment(currentFragment)) {
+		if(!hideCurrentFrame()) {
 			return false;
 		}
 		
-		updataSlidingMenu(frame.getSlidingMode());	
+		updataSlidingMenu(frame.getSlidingMode());
+
+		if (!showFrame(frame)) {
+			return false;
+		}
+
+		prevFrame = currentFrame;		
+		currentFrame = frame;
 		
+		return true;		
+	}
+
+	private boolean showFrame(Frame frame) {
+				
 		ContentFragment fragment = (ContentFragment) this.activity.getSupportFragmentManager().findFragmentByTag(frame.getName());
+		
 		if(fragment == null) {
 			switch(frame) {
 			case Welcome:
 				fragment = createWelcomeFrame();
 				break;
-			case Setting:
-				fragment = createSettingFrame();
-				break;
 			case Dictionary:
 				fragment = createDictionaryFrame();
+				break;
+			case Wizard:
+				fragment = createWizardFrame();
 				break;
 			default:
 				return false;
@@ -76,11 +96,11 @@ public class ContentSwitcher {
 				return false;
 			}
 		}
-				
+		
 		return true;
 	}
-	
-	public boolean remove(final Frame frame) {
+
+	public boolean removeFrame(final Frame frame) {
 		if(frame == currentFrame) {
 			return false;
 		}
@@ -98,7 +118,12 @@ public class ContentSwitcher {
 	
 	private void updataSlidingMenu(int slidingMode) {
 		SlidingMenu slidingmenu = this.activity.getSlidingMenu();
-		slidingmenu.setMode(slidingMode);
+		
+		if(slidingMode != -1) {
+			slidingmenu.setMode(slidingMode);
+		} else {
+			slidingmenu.setSlidingEnabled(false);
+		}
 	}
 
 	private boolean addFragment(final Frame frame, final ContentFragment fragment) {
@@ -108,9 +133,6 @@ public class ContentSwitcher {
 		
 		FragmentManager fm = this.activity.getSupportFragmentManager();
 		fm.beginTransaction().add(R.id.lac, fragment, frame.getName()).commit();
-		
-		currentFrame = frame;
-		currentFragment = fragment;	
 		
 		return true;
 	}
@@ -123,12 +145,16 @@ public class ContentSwitcher {
 		FragmentManager fm = this.activity.getSupportFragmentManager();
 		fm.beginTransaction().show(fragment).commit();
 		
-		currentFrame = frame;
-		currentFragment = fragment;	
 		return true;
 	}
 	
-	private boolean hideFragment(final ContentFragment fragment) {
+	private boolean hideCurrentFrame() {
+		if (currentFrame == null) {
+			return true;
+		}
+			
+		ContentFragment fragment = (ContentFragment) this.activity.getSupportFragmentManager().findFragmentByTag(currentFrame.getName());
+		
 		if(fragment == null) {
 			return true;
 		}
@@ -138,33 +164,33 @@ public class ContentSwitcher {
 		}
 
 		FragmentManager fm = this.activity.getSupportFragmentManager();
-		fm.beginTransaction().hide(fragment).commit();
+		if (!currentFrame.hasRemoved()) {
+			fm.beginTransaction().hide(fragment).commit();
+		} else {
+			fm.beginTransaction().remove(fragment).commit();
+		}
+		
 		currentFrame = null;
-		currentFragment = null;
 		
 		return true;
+	}
+	
+	public final Frame getCurrentFrame() {
+		return currentFrame;
 	}
 	
 	private ContentFragment createWelcomeFrame() {
 		return new WelcomeFragment();
 	}
 
-	private ContentFragment createSettingFrame() {
-		return new SettingFragment();
-	}	
-	
 	private ContentFragment createDictionaryFrame() {
 		return new DictionaryFragment();
 	}
 	
-	public final Frame getCurrentFrame() {
-		return currentFrame;
-	}
-
-	public final ContentFragment getCurrentFragment() {
-		return currentFragment;
-	}
-	
+	private ContentFragment createWizardFrame() {
+		return new WizardFragment();
+	}	
+		
 	
 //	private boolean replaceFragment(final Frame frame, final ContentFragment content) {
 //		

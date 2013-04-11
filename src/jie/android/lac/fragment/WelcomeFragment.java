@@ -41,7 +41,7 @@ public class WelcomeFragment extends ContentFragment {
 	protected void onButtonClick() {
 		LACActivity activity = (LACActivity) this.getSherlockActivity();
 		
-		activity.updateFrame(Frame.Dictionary);// .Setting);
+		activity.updateFrame(Frame.Wizard);// .Dictionary);// .Setting);
 	}
 
 }
