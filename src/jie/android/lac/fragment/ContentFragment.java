@@ -1,6 +1,7 @@
 package jie.android.lac.fragment;
 
 import jie.android.lac.R;
+import jie.android.lac.app.LACActivity;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -61,6 +62,10 @@ public abstract class ContentFragment extends SherlockFragment implements OnSwit
 	@Override
 	public boolean onPrepareExit() {
 		return true;
+	}
+	
+	public LACActivity getLACActivity() {
+		return (LACActivity) this.getSherlockActivity();
 	}
 
 }

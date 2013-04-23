@@ -10,7 +10,8 @@ public final class Configuration {
 	private static final String PREFS_SLIDING_FADE_ENABLED	=	"sliding_fade_enable";
 	private static final String PREFS_SLIDING_FADE_DEGREE	=	"sliding_fade_degree";
 	
-	private static final String PREFS_DATA_FOLDER			=	"data_folder";
+	private static final String PREFS_DATA_IN_CARD			=	"data_in_card";//0:not init; 1: card; 2: local
+//	private static final String PREFS_DATA_FOLDER			=	"data_folder";
 	
 	private SharedPreferences prefs = null;
 	
@@ -42,12 +43,20 @@ public final class Configuration {
 		prefs.edit().putFloat(PREFS_SLIDING_FADE_DEGREE, value);
 	}
 	
-	public final String getDataFolder() {
-		return prefs.getString(PREFS_DATA_FOLDER, "/mnt/sdcard/");
+	public int getDataInCard() {
+		return prefs.getInt(PREFS_DATA_IN_CARD, -1); 
 	}
 	
-	public void setDataFolder(final String value) {
-		prefs.edit().putString(PREFS_DATA_FOLDER, value);
+	public void setDataInCard(int value) {
+		prefs.edit().putInt(PREFS_DATA_IN_CARD, value);
 	}
+	
+//	public final String getDataFolder() {
+//		return prefs.getString(PREFS_DATA_FOLDER, "/mnt/sdcard/");
+//	}
+//	
+//	public void setDataFolder(final String value) {
+//		prefs.edit().putString(PREFS_DATA_FOLDER, value);
+//	}
 	
 }

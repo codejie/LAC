@@ -4,18 +4,25 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.ViewFlipper;
 import jie.android.lac.R;
 import jie.android.lac.app.LACActivity;
 import jie.android.lac.app.ContentSwitcher.Frame;
 
-public class WizardFragment extends ContentFragment implements OnClickListener {
+public class WizardFragment extends ContentFragment implements OnClickListener, OnFocusChangeListener {
 	
 	private int indexPage = 0;
 	private ViewFlipper flipper = null;
 	private Button btnNavigate = null;
+	
+	private View viewLocation = null;
+	private View viewFinished = null;
 	
 	public WizardFragment() {
 		super(R.layout.fragment_wizard);
@@ -36,8 +43,13 @@ public class WizardFragment extends ContentFragment implements OnClickListener {
 		
 		flipper = (ViewFlipper) this.getView().findViewById(R.id.flipper);
 		
-		flipper.addView(inflater.inflate(R.layout.fragment_wizard_setdatalocation, null));
-		flipper.addView(inflater.inflate(R.layout.fragment_wizard_finished, null));		
+		viewLocation = inflater.inflate(R.layout.fragment_wizard_setdatalocation, null);
+		viewFinished = inflater.inflate(R.layout.fragment_wizard_finished, null);
+		
+		flipper.addView(viewLocation);
+		flipper.addView(viewFinished);
+		
+		flipper.setOnFocusChangeListener(this);
 	}
 
 	private void initViews() {
@@ -45,7 +57,7 @@ public class WizardFragment extends ContentFragment implements OnClickListener {
 		
 		btnNavigate = (Button) view.findViewById(R.id.btnNavigate);
 		btnNavigate.setOnClickListener(this);
-		btnNavigate.setText(R.string.lac_wizard_next);
+		btnNavigate.setText(R.string.lac_wizard_next);		
 	}
 	
 	@Override
@@ -57,6 +69,35 @@ public class WizardFragment extends ContentFragment implements OnClickListener {
 		}		
 	}
 
+	@Override
+	public void onFocusChange(View view, boolean hasFocus) {
+		if (view == viewLocation) {
+			
+			if (this.getLACActivity().getConfig().getDataInCard() != 1) {
+				((RadioButton)view.findViewById(R.id.radio1)).setChecked(true);
+			} else {
+				((RadioButton)view.findViewById(R.id.radio0)).setChecked(true);
+			}
+			
+			RadioGroup rg = (RadioGroup) view.findViewById(R.id.radioGroup1);
+			
+			rg.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+				@Override
+				public void onCheckedChanged(RadioGroup group, int id) {
+					onDataStorageChanged(id == R.id.radio1);
+				}				
+			});
+		} else if (view == viewFinished) {
+			
+		}
+	}
+	
+	protected void onDataStorageChanged(boolean isCard) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	private void onBtnNavigate() {
 		++ indexPage;
 		if (indexPage < flipper.getChildCount()) {
@@ -66,4 +107,5 @@ public class WizardFragment extends ContentFragment implements OnClickListener {
 			activity.updateFrame(Frame.Welcome);
 		}
 	}
+
 }

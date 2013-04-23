@@ -3,11 +3,13 @@
     <string name="app_name">LAC</string>
     <string name="app_title">LingosHook</string>
     <string name="app_subtitle">Android Client</string>
-    <string name="lac_wizard_setdatalocation">Set the folder for application data</string>
+    <string name="lac_wizard_setdatalocation">The location for application data</string>
     <string name="lac_wizard_datadefaultfolder">/sdcard/jie</string>
     <string name="lac_wizard_browsefolder">Browse..</string>
     <string name="lac_wizard_next">Next</string>
     <string name="lac_wizard_finish">Congratulation!</string>
     <string name="lac_wizard_start">Go !</string>
+    <string name="lac_wizard_location_local">Local  Directory</string>
+    <string name="lac_wizard_location_sdcard">Extern Storage (SD Card)</string>
 
 </resources>

@@ -3,28 +3,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <EditText
-        android:id="@+id/editText1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="46dp"
-        android:ems="10"
-        android:text="@string/lac_wizard_datadefaultfolder" >
-
-        <requestFocus />
-    </EditText>
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/editText1"
-        android:layout_below="@+id/editText1"
-        android:layout_marginTop="18dp"
-        android:text="@string/lac_wizard_browsefolder" />
-
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
@@ -34,5 +12,27 @@
         android:layout_marginTop="66dp"
         android:text="@string/lac_wizard_setdatalocation"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp" >
+
+        <RadioButton
+            android:id="@+id/radio0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/lac_wizard_location_local" />
+
+        <RadioButton
+            android:id="@+id/radio1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lac_wizard_location_sdcard" />
+    </RadioGroup>
 
 </RelativeLayout>

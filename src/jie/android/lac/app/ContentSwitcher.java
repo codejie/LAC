@@ -63,7 +63,7 @@ public class ContentSwitcher {
 			return false;
 		}
 
-		prevFrame = currentFrame;		
+		prevFrame = currentFrame;
 		currentFrame = frame;
 		
 		return true;		
