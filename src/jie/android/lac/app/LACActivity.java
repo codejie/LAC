@@ -9,15 +9,17 @@ import com.slidingmenu.lib.app.SlidingFragmentActivity;
 import jie.android.lac.R;
 import jie.android.lac.app.ContentSwitcher.Frame;
 import jie.android.lac.fragment.ColorFragment;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 
 public class LACActivity extends SlidingFragmentActivity {
 	
-	private Configuration configuration = null;
-	
+	private Configuration configuration = null;	
 	private ContentSwitcher contentSwitcher = null;
+	private ServiceAccess serviceAccess = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -25,13 +27,16 @@ public class LACActivity extends SlidingFragmentActivity {
 		
 		initGlobalData();
 		
-		initView();		
+		initService();
+		
+		initView();
 		
 		initFrame();
 	}
 
 	@Override
-	protected void onDestroy() {		
+	protected void onDestroy() {
+		releaseService();
 
 		super.onDestroy();
 	}
@@ -50,6 +55,15 @@ public class LACActivity extends SlidingFragmentActivity {
 		initSlidingMenu();	
 	}
 
+	private void initService() {
+		serviceAccess = new ServiceAccess(this);
+		serviceAccess.bindService();
+	}
+	
+	private void releaseService() {
+		serviceAccess.unbindService();
+	}
+	
 	private void initFrame() {
 		updateFrame(Frame.Welcome);
 	}
@@ -99,8 +113,6 @@ public class LACActivity extends SlidingFragmentActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-
-
 		return super.onOptionsItemSelected(item);
 	}
 

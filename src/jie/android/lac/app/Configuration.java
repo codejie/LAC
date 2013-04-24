@@ -5,12 +5,12 @@ import android.content.SharedPreferences;
 
 public final class Configuration {
 
-	private static final String PREFS_WIZARD_DONE			=	"wizard_done";
+	public static final String PREFS_WIZARD_DONE			=	"wizard_done";
 	
-	private static final String PREFS_SLIDING_FADE_ENABLED	=	"sliding_fade_enable";
-	private static final String PREFS_SLIDING_FADE_DEGREE	=	"sliding_fade_degree";
+	public static final String PREFS_SLIDING_FADE_ENABLED	=	"sliding_fade_enable";
+	public static final String PREFS_SLIDING_FADE_DEGREE	=	"sliding_fade_degree";
 	
-	private static final String PREFS_DATA_IN_CARD			=	"data_in_card";//0:not init; 1: card; 2: local
+	public static final String PREFS_DATA_IN_CARD			=	"data_in_card";//0:not init; 1: card; 2: local
 //	private static final String PREFS_DATA_FOLDER			=	"data_folder";
 	
 	private SharedPreferences prefs = null;

@@ -18,6 +18,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <service android:name=".service.LACService" android:process=":lac_service">
+            <intent-filter>
+                <action android:name="lacService"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
