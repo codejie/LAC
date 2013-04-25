@@ -1,9 +1,14 @@
 package jie.android.lac.fragment;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import jie.android.lac.R;
 import jie.android.lac.app.LACActivity;
 import jie.android.lac.app.ContentSwitcher.Frame;
+import jie.android.lac.service.AssetsHelper;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,10 +44,26 @@ public class WelcomeFragment extends ContentFragment {
 	}
 
 	protected void onButtonClick() {
+		//initData(0);
+		
 		
 		LACActivity activity = this.getLACActivity();//(LACActivity) this.getSherlockActivity();
 		
 		activity.updateFrame(Frame.Wizard);// .Dictionary);// .Setting);
 	}
+	
+	private void initData(int flag) {
+
+		String target = this.getLACActivity().getDatabasePath("lac").getParent();// .getAbsolutePath();// .getd .getFilesDir().getAbsolutePath();//  Environment.getDataDirectory().getAbsolutePath();
+		
+		try {
+			InputStream input = this.getLACActivity().getAssets().open("lac2.zip");// this.getAssets().open("lac2.zip");
+			AssetsHelper.UnzipTo(input, target);			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}	
 
 }

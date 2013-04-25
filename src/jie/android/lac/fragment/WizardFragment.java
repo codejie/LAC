@@ -73,7 +73,7 @@ public class WizardFragment extends ContentFragment implements OnClickListener, 
 	public void onFocusChange(View view, boolean hasFocus) {
 		if (view == viewLocation) {
 			
-			if (this.getLACActivity().getConfig().getDataInCard() != 1) {
+			if (this.getLACActivity().getConfig().getDataLocation() != 1) {
 				((RadioButton)view.findViewById(R.id.radio1)).setChecked(true);
 			} else {
 				((RadioButton)view.findViewById(R.id.radio0)).setChecked(true);
