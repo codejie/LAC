@@ -20,26 +20,7 @@ public class DBAccess {// extends SQLiteOpenHelper {
 		Log.d(Tag, "open db : " + name);
 		
 		db = SQLiteDatabase.openOrCreateDatabase(name, null);
-//		super(context, DBAccess.FILE, null, DBAccess.VERSION);
 	}
-//
-//	@Override
-//	public void onCreate(SQLiteDatabase db) {
-//
-//	}
-//
-//	@Override
-//	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-//
-//	}
-//
-//	@Override
-//	public void onOpen(SQLiteDatabase db) {
-//		super.onOpen(db);
-//		
-//		this.db = db;
-//		Log.d(Tag, "DBAccess - onOpen()" + db);
-//	}
 	
 	public int getState() {
 		Cursor cursor = db.query("dict_info", new String[] { "offset" }, "idx=0", null, null, null, null);
@@ -52,6 +33,10 @@ public class DBAccess {// extends SQLiteOpenHelper {
 			cursor.close();
 		}
 		return -1;
+	}
+
+	public Cursor getWord(String condition) {
+		return db.query("word_info", new String[] { "idx", "word" }, null, null, null, null, null, "LIMIT 10");
 	}
 
 }

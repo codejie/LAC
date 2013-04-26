@@ -123,7 +123,9 @@ public class LACActivity extends SlidingFragmentActivity {
 	public Configuration getConfig() { 
 		return configuration;
 	}
-
 	
+	public ServiceAccess getServiceAccess() {
+		return serviceAccess;
+	}
 	
 }

@@ -7,7 +7,13 @@
     <com.handmark.pulltorefresh.library.PullToRefreshListView
         android:id="@+id/pull_refresh_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="415dp" >
     </com.handmark.pulltorefresh.library.PullToRefreshListView>
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button" />
 
 </LinearLayout>

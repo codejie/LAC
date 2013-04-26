@@ -1,5 +1,13 @@
 package jie.android.lac.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import android.database.Cursor;
+import android.os.RemoteException;
+import jie.android.lac.data.WordData;
+import jie.android.lac.service.aidl.Access;;
+
 public class ServiceStub extends Access.Stub {
 	
 	private DBAccess dbAccess = null;
@@ -12,5 +20,23 @@ public class ServiceStub extends Access.Stub {
 	public int checkState() {
 		return dbAccess.getState();
 		//return 100;
+	}
+
+	@Override
+	public List<WordData> queryWordData(final String condition) throws RemoteException {
+		
+		ArrayList<WordData> ret = new ArrayList<WordData>();
+		
+		Cursor cursor = dbAccess.getWord(condition);		
+		if (cursor != null && cursor.moveToFirst()) {
+			do {
+				WordData data = new WordData(cursor.getInt(0), cursor.getString(1));
+				
+				ret.add(data);
+				
+			} while (cursor.moveToNext());
+		}	
+
+		return null;
 	}
 }

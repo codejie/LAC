@@ -49,7 +49,7 @@ public class WelcomeFragment extends ContentFragment {
 		
 		LACActivity activity = this.getLACActivity();//(LACActivity) this.getSherlockActivity();
 		
-		activity.updateFrame(Frame.Wizard);// .Dictionary);// .Setting);
+		activity.updateFrame(Frame.Dictionary);// .Wizard);// .Dictionary);// .Setting);
 	}
 	
 	private void initData(int flag) {

@@ -1,6 +1,6 @@
 package jie.android.lac.app;
 
-import jie.android.lac.service.Access;
+import jie.android.lac.service.aidl.Access;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -38,8 +38,6 @@ public class ServiceAccess {
 	}
 
 	protected void onDisconnected() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	protected void onConnected() {
@@ -64,6 +62,10 @@ public class ServiceAccess {
 		activity.unbindService(connection);
 	}
 	
+
+	public final Access getAccess() {
+		return access;
+	}
 	
 	
 }
