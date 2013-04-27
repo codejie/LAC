@@ -35,8 +35,15 @@ public class DBAccess {// extends SQLiteOpenHelper {
 		return -1;
 	}
 
-	public Cursor getWord(String condition) {
-		return db.query("word_info", new String[] { "idx", "word" }, null, null, null, null, null, "LIMIT 10");
+	public Cursor getWord(String condition, int offset, int limit) {
+		condition = "word LIKE '" + condition + "%'";
+		String sql = "SELECT idx, word, flag FROM word_info";
+		if(condition != null) {
+			sql += " WHERE " + condition;
+		}
+		sql += " LIMIT " + limit + " OFFSET " + offset ;
+		
+		return db.rawQuery(sql, null);
 	}
 
 }

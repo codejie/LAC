@@ -5,5 +5,5 @@ import jie.android.lac.data.WordData;
 
 interface Access {
 	int checkState();
-	List<WordData> queryWordData(in String condition);
+	List<WordData> queryWordData(in String condition, in int offset, in int limit);
 }

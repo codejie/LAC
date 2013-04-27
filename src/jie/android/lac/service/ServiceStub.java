@@ -23,11 +23,11 @@ public class ServiceStub extends Access.Stub {
 	}
 
 	@Override
-	public List<WordData> queryWordData(final String condition) throws RemoteException {
+	public List<WordData> queryWordData(final String condition, int offset, int limit) throws RemoteException {
 		
 		ArrayList<WordData> ret = new ArrayList<WordData>();
 		
-		Cursor cursor = dbAccess.getWord(condition);		
+		Cursor cursor = dbAccess.getWord(condition, offset, limit);		
 		if (cursor != null && cursor.moveToFirst()) {
 			do {
 				WordData data = new WordData(cursor.getInt(0), cursor.getString(1));
@@ -37,6 +37,6 @@ public class ServiceStub extends Access.Stub {
 			} while (cursor.moveToNext());
 		}	
 
-		return null;
+		return ret;
 	}
 }

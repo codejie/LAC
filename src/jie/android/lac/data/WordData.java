@@ -12,7 +12,7 @@ public class WordData implements Parcelable {
 			WordData data = new WordData();
 			data.setId(source.readInt());
 			data.setWord(source.readString());
-			return null;
+			return data;
 		}
 
 		@Override

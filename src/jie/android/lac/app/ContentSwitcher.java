@@ -127,7 +127,7 @@ public class ContentSwitcher {
 	}
 
 	private boolean addFragment(final Frame frame, final ContentFragment fragment) {
-		if(fragment == null || !fragment.onPrepareEnter()) {
+		if(fragment == null || !fragment.onEnter()) {
 			return false;
 		}
 		
@@ -159,7 +159,7 @@ public class ContentSwitcher {
 			return true;
 		}
 		
-		if(!fragment.onPrepareExit()) {
+		if(!fragment.onExit()) {
 			return false;
 		}
 

@@ -3,6 +3,7 @@ package jie.android.lac.app;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
+import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
 
@@ -13,13 +14,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 
 public class LACActivity extends SlidingFragmentActivity {
 	
+	private static final String Tag = LACActivity.class.getName();
+	
 	private Configuration configuration = null;	
 	private ContentSwitcher contentSwitcher = null;
 	private ServiceAccess serviceAccess = null;
+	
+	private SearchView searchView = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -97,22 +103,38 @@ public class LACActivity extends SlidingFragmentActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		
 		SearchView sv = new SearchView(getSupportActionBar().getThemedContext());
-
 		sv.setQueryHint("Keyword");
+		sv.setOnQueryTextListener(new OnQueryTextListener() {
+
+			@Override
+			public boolean onQueryTextSubmit(String query) {
+				Log.d(Tag, "search key submit : " + query);
+				return true;
+			}
+
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				Log.d(Tag, "search key change : " + newText);
+				return true;
+			}
+			
+		});
 		
         menu.add("Search")
         .setIcon(R.drawable.abs__ic_search)
         .setActionView(sv)
         .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
 
-		this.getSupportMenuInflater().inflate(R.menu.lac, menu);
-		
+		this.getSupportMenuInflater().inflate(R.menu.lac, menu);		
 
 		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		Log.d(Tag, "MenuItem : " + item.getItemId());
+		
 		return super.onOptionsItemSelected(item);
 	}
 

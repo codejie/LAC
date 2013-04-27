@@ -1,6 +1,7 @@
 package jie.android.lac.fragment.data;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import jie.android.lac.app.ServiceAccess;
 import jie.android.lac.data.WordData;
@@ -16,18 +17,29 @@ import android.widget.TextView;
 
 public class DictionaryFragmentListAdapter extends BaseAdapter {
 
+	private static final String Tag = DictionaryFragmentListAdapter.class.getName();
+	
+	public static interface OnRefreshResultListener {
+		public void onLoadResult(int count, int total);
+		public void onLoadResultEnd(int count,int total);
+		public void onNoResult();
+		public void onNomoreResult(int total);
+		public void onAceessFailed();
+	}
+	
 	private Context context = null;
 	private Access access = null;
+	private OnRefreshResultListener resultListener = null;
 	
 	private ArrayList<WordData> dataArray = new ArrayList<WordData>();
 	
-	private int offset = 0;
-	private int maxItem = 0;
+	private int maxItem = 15;
 	private String condition = null;
 	
-	public DictionaryFragmentListAdapter(Context context, ServiceAccess service) {
+	public DictionaryFragmentListAdapter(Context context, ServiceAccess service, OnRefreshResultListener resultListener) {
 		this.context = context;
 		this.access = service.getAccess();
+		this.resultListener = resultListener;
 	}
 	
 	@Override
@@ -57,14 +69,49 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	}
 	
 	public void load(final String condition) {
-		try {
-			dataArray.addAll(access.queryWordData(condition));
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.condition= condition;
 		
-		this.notifyDataSetChanged();
+		dataArray.clear();
+		
+		refresh();
+		
+//		try {
+//			List<WordData> l = access.queryWordData(condition); 
+//			dataArray.addAll(l);
+//		} catch (RemoteException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		this.notifyDataSetChanged();
+	}
+
+	public void refresh() {
+		try {
+			List<WordData> l = access.queryWordData(condition, dataArray.size(), maxItem);
+			if (l != null) {
+				dataArray.addAll(l);
+				if (resultListener != null) {
+					resultListener.onLoadResult(l.size(), dataArray.size());
+				}
+				this.notifyDataSetChanged();
+				if (resultListener != null) {
+					resultListener.onLoadResultEnd(l.size(), dataArray.size());
+				}				
+			} else {
+				if (resultListener != null) {
+					if (dataArray.size() > 0) {
+						resultListener.onNomoreResult(dataArray.size());
+					} else {
+						resultListener.onNoResult();
+					}
+				}
+			}
+		} catch (RemoteException e) {
+			if (resultListener != null) {
+				resultListener.onAceessFailed();
+			}
+		}
 	}
 
 }
