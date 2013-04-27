@@ -94,7 +94,8 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 				if (resultListener != null) {
 					resultListener.onLoadResult(l.size(), dataArray.size());
 				}
-				this.notifyDataSetChanged();
+				//this.notifyDataSetChanged();
+				
 				if (resultListener != null) {
 					resultListener.onLoadResultEnd(l.size(), dataArray.size());
 				}				
