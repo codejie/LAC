@@ -77,62 +77,25 @@ public class DictionaryFragment extends ContentFragment implements OnRefreshResu
 
 	@Override
 	public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-		new GetDataTask().execute();
-//		adapter.refresh();
-//		pullList.onRefreshComplete();		
+		adapter.refresh();
 	}	
-
-	@Override
-	public void onLoadResult(int count, int total) {
-	}
 
 	@Override
 	public void onLoadResultEnd(int count, int total) {
-//		pullList.getRefreshableView().smoothScrollToPosition(total - count + 5);
-//		State state = pullList.getState();
-//		Log.d(Tag, "current state : " + state);
-	}
-	
-	@Override
-	public void onNoResult() {
-		// TODO Auto-generated method stub
-		
+		pullList.onRefreshComplete();
 	}
 
-	@Override
-	public void onNomoreResult(int total) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onAceessFailed() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void onIntent(Intent intent) {
-		// TODO Auto-generated method stub
+		if (intent != null) {
+			String condition = intent.getStringExtra("keyword");
+			if (condition != null) {
+				adapter.load(condition);
+			}
+		}
 		super.onIntent(intent);
 	}
-
-	private class GetDataTask extends AsyncTask<Void, Void, Void> {
-
-		@Override
-		protected Void doInBackground(Void... params) {
-			adapter.refresh();
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void result) {
-			adapter.notifyDataSetChanged();
-			pullList.onRefreshComplete();
-			super.onPostExecute(result);
-		}
-
-	}	
 	
 }
 

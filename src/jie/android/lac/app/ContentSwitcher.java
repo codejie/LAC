@@ -6,6 +6,7 @@ import jie.android.lac.fragment.DictionaryFragment;
 import jie.android.lac.fragment.WelcomeFragment;
 import jie.android.lac.fragment.WizardFragment;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 
 import com.slidingmenu.lib.SlidingMenu;
@@ -50,26 +51,33 @@ public class ContentSwitcher {
 	}
 	
 	public boolean update(final Frame frame) {
-		if(frame == currentFrame)
+		return update(frame, null);	
+	}
+	
+	public boolean update(final Frame frame, Intent intent) {
+
+		if(frame != currentFrame) {
+			
+			if(!hideCurrentFrame()) {
+				return false;
+			}
+			
+			updataSlidingMenu(frame.getSlidingMode());
+	
+			if (!showFrame(frame, intent)) {
+				return false;
+			}
+	
+			prevFrame = currentFrame;
+			currentFrame = frame;
+			
 			return true;
-		
-		if(!hideCurrentFrame()) {
-			return false;
+		} else {
+			return showCurrentFrame(intent);
 		}
-		
-		updataSlidingMenu(frame.getSlidingMode());
-
-		if (!showFrame(frame)) {
-			return false;
-		}
-
-		prevFrame = currentFrame;
-		currentFrame = frame;
-		
-		return true;		
 	}
 
-	private boolean showFrame(Frame frame) {
+	private boolean showFrame(Frame frame, Intent intent) {
 				
 		ContentFragment fragment = (ContentFragment) this.activity.getSupportFragmentManager().findFragmentByTag(frame.getName());
 		
@@ -96,6 +104,23 @@ public class ContentSwitcher {
 				return false;
 			}
 		}
+		
+		fragment.onIntent(intent);
+		
+		return true;
+	}
+	
+	private boolean showCurrentFrame(Intent intent) {
+		if (currentFrame == null) {
+			return false;
+		}
+		
+		ContentFragment fragment = (ContentFragment) this.activity.getSupportFragmentManager().findFragmentByTag(currentFrame.getName());
+		if (fragment == null) {
+			return false;
+		}
+		
+		fragment.onIntent(intent);
 		
 		return true;
 	}
@@ -190,46 +215,8 @@ public class ContentSwitcher {
 	private ContentFragment createWizardFrame() {
 		return new WizardFragment();
 	}	
-		
 	
-//	private boolean replaceFragment(final Frame frame, final ContentFragment content) {
-//		
-//		if(content == null || !content.OnPrepareEnter()) {
-//			return false;
-//		}
-//		
-//		SlidingMenu slidingmenu = this.activity.getSlidingMenu();
-//		FragmentManager fm = this.activity.getSupportFragmentManager();
-//		
-//		if(left == null && right == null) {
-//			slidingmenu.setSlidingEnabled(false);
-//		} else if(left != null && right != null) {
-//			slidingmenu.setMode(SlidingMenu.LEFT_RIGHT);
-//			fm.beginTransaction().replace(R.id.lac_left, left).commit();
-//			fm.beginTransaction().replace(R.id.lac_right, right).commit();
-//		} else if(left != null) {
-//			slidingmenu.setMode(SlidingMenu.LEFT);
-//			fm.beginTransaction().replace(R.id.lac_left, left).commit();
-//		} else {
-//			slidingmenu.setMode(SlidingMenu.RIGHT);
-//			fm.beginTransaction().replace(R.id.lac_right, right).commit();
-//		}
-//		
-//		fm.beginTransaction().add .replace(R.id.lac, content, frame).commit();
-//		
-//		currentFrame = frame;
-//		currentFragment = content;
-//		
-//		return true;
-//	}
-
-//	private ContentFragment updateToWelcomeFrame() {
-//		FragmentManager fm = this.activity.getSupportFragmentManager();
-//		
-//		
-////		if(fm.findFragmentByTag(arg0))
-////		
-////		return replaceFragment(Frame.Welcome, new WelcomeFragment(), null, null);
-//		return null;
-//	}	
+	public void postIntent(Frame frame) {
+		update(frame);		
+	}
 }

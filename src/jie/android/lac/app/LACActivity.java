@@ -3,6 +3,7 @@ package jie.android.lac.app;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
+import com.actionbarsherlock.widget.SearchView.OnCloseListener;
 import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
@@ -10,11 +11,16 @@ import com.slidingmenu.lib.app.SlidingFragmentActivity;
 import jie.android.lac.R;
 import jie.android.lac.app.ContentSwitcher.Frame;
 import jie.android.lac.fragment.ColorFragment;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 
 
 public class LACActivity extends SlidingFragmentActivity {
@@ -102,32 +108,62 @@ public class LACActivity extends SlidingFragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		
-		SearchView sv = new SearchView(getSupportActionBar().getThemedContext());
-		sv.setQueryHint("Keyword");
-		sv.setOnQueryTextListener(new OnQueryTextListener() {
+		this.getSupportMenuInflater().inflate(R.menu.lac, menu);		
+
+		searchView = (SearchView) menu.findItem(R.id.item4).getActionView();
+		searchView.setQueryHint("Keyword");
+		
+		searchView.setOnSearchClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.d(Tag, "setOnSearchClickListener");
+				onSearchViewChange(true);
+			}
+			
+		});
+		
+		searchView.setOnCloseListener(new OnCloseListener() {
+
+			@Override
+			public boolean onClose() {
+				Log.d(Tag, "setOnCloseListener");
+				onSearchViewChange(false);
+				return false;
+			}
+			
+		});
+		
+		searchView.setOnQueryTextListener(new OnQueryTextListener() {
 
 			@Override
 			public boolean onQueryTextSubmit(String query) {
 				Log.d(Tag, "search key submit : " + query);
+				onSearchViewQueryChanged(query, true);
 				return true;
 			}
 
 			@Override
 			public boolean onQueryTextChange(String newText) {
 				Log.d(Tag, "search key change : " + newText);
+				onSearchViewQueryChanged(newText, false);
 				return true;
 			}
 			
-		});
-		
-        menu.add("Search")
-        .setIcon(R.drawable.abs__ic_search)
-        .setActionView(sv)
-        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-
-		this.getSupportMenuInflater().inflate(R.menu.lac, menu);		
+		});		
 
 		return super.onCreateOptionsMenu(menu);
+	}
+
+	protected void onSearchViewQueryChanged(String query, boolean isSubmitted) {
+		Intent intent = new Intent();
+		intent.putExtra("keyword", query);
+		intent.putExtra("submit", isSubmitted);
+	
+		contentSwitcher.update(Frame.Dictionary, intent);		
+	}
+
+	protected void onSearchViewChange(boolean isOpen) {
+		contentSwitcher.update(Frame.Dictionary);
 	}
 
 	@Override
@@ -135,6 +171,7 @@ public class LACActivity extends SlidingFragmentActivity {
 		
 		Log.d(Tag, "MenuItem : " + item.getItemId());
 		
+//		searchView.setIconified(false);
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -148,6 +185,20 @@ public class LACActivity extends SlidingFragmentActivity {
 	
 	public ServiceAccess getServiceAccess() {
 		return serviceAccess;
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_SEARCH) {
+			searchView.setIconified(false);
+			return true;
+		} else if(keyCode == KeyEvent.KEYCODE_BACK) {
+			if (!searchView.isIconified()) {
+				searchView.setIconified(true);
+				return true;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 	
 }

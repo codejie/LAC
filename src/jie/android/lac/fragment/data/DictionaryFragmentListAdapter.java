@@ -8,6 +8,7 @@ import jie.android.lac.data.WordData;
 import jie.android.lac.service.aidl.Access;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,11 +21,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	private static final String Tag = DictionaryFragmentListAdapter.class.getName();
 	
 	public static interface OnRefreshResultListener {
-		public void onLoadResult(int count, int total);
 		public void onLoadResultEnd(int count,int total);
-		public void onNoResult();
-		public void onNomoreResult(int total);
-		public void onAceessFailed();
 	}
 	
 	private Context context = null;
@@ -74,45 +71,38 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 		dataArray.clear();
 		
 		refresh();
-		
-//		try {
-//			List<WordData> l = access.queryWordData(condition); 
-//			dataArray.addAll(l);
-//		} catch (RemoteException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		this.notifyDataSetChanged();
+	}
+	
+	public void refresh() {
+		new LoadDataTask().execute();
 	}
 
-	public void refresh() {
-		try {
-			List<WordData> l = access.queryWordData(condition, dataArray.size(), maxItem);
-			if (l != null) {
-				dataArray.addAll(l);
-				if (resultListener != null) {
-					resultListener.onLoadResult(l.size(), dataArray.size());
+	private class LoadDataTask extends AsyncTask<Void, Void, Integer> {
+
+		@Override
+		protected Integer doInBackground(Void... params) {
+			try {
+				List<WordData> l = access.queryWordData(condition, dataArray.size(), maxItem);
+				if (l != null) {
+					dataArray.addAll(l);
+					return l.size();
+				} else {
+					return -1;
 				}
-				//this.notifyDataSetChanged();
-				
-				if (resultListener != null) {
-					resultListener.onLoadResultEnd(l.size(), dataArray.size());
-				}				
-			} else {
-				if (resultListener != null) {
-					if (dataArray.size() > 0) {
-						resultListener.onNomoreResult(dataArray.size());
-					} else {
-						resultListener.onNoResult();
-					}
-				}
-			}
-		} catch (RemoteException e) {
-			if (resultListener != null) {
-				resultListener.onAceessFailed();
+			} catch (RemoteException e) {
+				return -1;
 			}
 		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			DictionaryFragmentListAdapter.this.notifyDataSetChanged();
+			if (resultListener != null) {
+				resultListener.onLoadResultEnd(result.intValue(), dataArray.size());
+			}
+			super.onPostExecute(result);
+		}	
+		
 	}
 
 }
