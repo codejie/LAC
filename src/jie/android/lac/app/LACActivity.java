@@ -108,10 +108,11 @@ public class LACActivity extends SlidingFragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		
-		this.getSupportMenuInflater().inflate(R.menu.lac, menu);		
+		this.getSupportMenuInflater().inflate(R.menu.lac, menu);
 
 		searchView = (SearchView) menu.findItem(R.id.item4).getActionView();
 		searchView.setQueryHint("Keyword");
+		searchView.setIconifiedByDefault(true);
 		
 		searchView.setOnSearchClickListener(new OnClickListener() {
 			@Override
@@ -159,11 +160,12 @@ public class LACActivity extends SlidingFragmentActivity {
 		intent.putExtra("keyword", query);
 		intent.putExtra("submit", isSubmitted);
 	
-		contentSwitcher.update(Frame.Dictionary, intent);		
+		contentSwitcher.postIntent(Frame.Dictionary, intent);
 	}
 
 	protected void onSearchViewChange(boolean isOpen) {
 		contentSwitcher.update(Frame.Dictionary);
+
 	}
 
 	@Override

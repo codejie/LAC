@@ -69,12 +69,14 @@ public class ContentSwitcher {
 			}
 	
 			prevFrame = currentFrame;
-			currentFrame = frame;
-			
-			return true;
+			currentFrame = frame;			
 		} else {
-			return showCurrentFrame(intent);
+			if (intent != null) {
+				return showCurrentFrame(intent);
+			}
 		}
+		
+		return true;
 	}
 
 	private boolean showFrame(Frame frame, Intent intent) {
@@ -216,7 +218,18 @@ public class ContentSwitcher {
 		return new WizardFragment();
 	}	
 	
-	public void postIntent(Frame frame) {
-		update(frame);		
+	public boolean postIntent(Frame frame, final Intent intent) {
+		if (intent == null) {
+			return true;
+		}
+		
+		ContentFragment fragment = (ContentFragment) this.activity.getSupportFragmentManager().findFragmentByTag(frame.getName());
+		if (fragment == null) {
+			return false;
+		}
+		
+		fragment.onIntent(intent);
+		
+		return true;
 	}
 }
