@@ -38,9 +38,12 @@ public class ServiceAccess {
 	}
 
 	protected void onDisconnected() {
+		activity.onServiceDisconnected();
 	}
 
 	protected void onConnected() {
+		activity.onServiceConnected();
+		
 		try {
 			int value = access.checkState();
 			Log.d(Tag, "state - " + value);

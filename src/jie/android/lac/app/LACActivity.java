@@ -9,27 +9,22 @@ import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
 
 import jie.android.lac.R;
-import jie.android.lac.app.ContentSwitcher.Frame;
-import jie.android.lac.fragment.ColorFragment;
-import android.app.SearchManager;
-import android.content.Context;
-import android.content.Intent;
+import jie.android.lac.app.FragmentSwitcher.FragmentType;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 
 
 public class LACActivity extends SlidingFragmentActivity {
 	
-	private static final String Tag = LACActivity.class.getName();
+	private static final String Tag = LACActivity.class.getSimpleName();
 	
 	private Configuration configuration = null;	
-	private ContentSwitcher contentSwitcher = null;
 	private ServiceAccess serviceAccess = null;
+	
+	private FragmentSwitcher fragmentSwitcher = null;
 	
 	private SearchView searchView = null;
 	
@@ -42,8 +37,6 @@ public class LACActivity extends SlidingFragmentActivity {
 		initService();
 		
 		initView();
-		
-		initFrame();
 	}
 
 	@Override
@@ -62,7 +55,7 @@ public class LACActivity extends SlidingFragmentActivity {
 		this.getSupportActionBar().setSubtitle(R.string.app_subtitle);
 		this.setContentView(R.layout.lac);
 		
-		contentSwitcher = new ContentSwitcher(this);
+		fragmentSwitcher = new FragmentSwitcher(this);
 		
 		initSlidingMenu();	
 	}
@@ -76,18 +69,13 @@ public class LACActivity extends SlidingFragmentActivity {
 		serviceAccess.unbindService();
 	}
 	
-	private void initFrame() {
-		updateFrame(Frame.Welcome);
-	}
-
 	private void initSlidingMenu() {
 		
 		this.setBehindContentView(R.layout.lac_left);
 		this.setSlidingActionBarEnabled(false);
 		
-		SlidingMenu sm = this.getSlidingMenu(); //new SlidingMenu(this);
+		SlidingMenu sm = this.getSlidingMenu(); //new SlidingMenu(this);		
 		
-		sm.setMode(SlidingMenu.LEFT_RIGHT);
 		sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
 		sm.setShadowDrawable(R.drawable.shadow);
 		sm.setShadowWidthRes(R.dimen.shadow_width);
@@ -95,15 +83,17 @@ public class LACActivity extends SlidingFragmentActivity {
 		sm.setFadeEnabled(configuration.getSlidingFadeEnabled());		
 		sm.setFadeDegree(configuration.getSlidingFadeDegree());
 		sm.setSecondaryMenu(R.layout.lac_right);
-		sm.setSecondaryShadowDrawable(R.drawable.shadow);		
+		sm.setSecondaryShadowDrawable(R.drawable.shadow);
+		
+		sm.setSlidingEnabled(false);
 				
-		replaceSlidingFragment(R.id.lac_left, new ColorFragment(R.color.green));
-		replaceSlidingFragment(R.id.lac_right, new ColorFragment(R.color.white));
+//		replaceSlidingFragment(R.id.lac_left, new ColorFragment(R.color.green));
+//		replaceSlidingFragment(R.id.lac_right, new ColorFragment(R.color.white));
 	}
 
-	private void replaceSlidingFragment(int id, Fragment fragment) {
-		this.getSupportFragmentManager().beginTransaction().replace(id, fragment).commit();		
-	}
+//	private void replaceSlidingFragment(int id, Fragment fragment) {
+//		this.getSupportFragmentManager().beginTransaction().replace(id, fragment).commit();		
+//	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -118,7 +108,7 @@ public class LACActivity extends SlidingFragmentActivity {
 			@Override
 			public void onClick(View v) {
 				Log.d(Tag, "setOnSearchClickListener");
-				onSearchViewChange(true);
+//				onSearchViewChange(true);
 			}
 			
 		});
@@ -128,7 +118,7 @@ public class LACActivity extends SlidingFragmentActivity {
 			@Override
 			public boolean onClose() {
 				Log.d(Tag, "setOnCloseListener");
-				onSearchViewChange(false);
+//				onSearchViewChange(false);
 				return false;
 			}
 			
@@ -139,14 +129,14 @@ public class LACActivity extends SlidingFragmentActivity {
 			@Override
 			public boolean onQueryTextSubmit(String query) {
 				Log.d(Tag, "search key submit : " + query);
-				onSearchViewQueryChanged(query, true);
+//				onSearchViewQueryChanged(query, true);
 				return true;
 			}
 
 			@Override
 			public boolean onQueryTextChange(String newText) {
 				Log.d(Tag, "search key change : " + newText);
-				onSearchViewQueryChanged(newText, false);
+//				onSearchViewQueryChanged(newText, false);
 				return true;
 			}
 			
@@ -155,18 +145,18 @@ public class LACActivity extends SlidingFragmentActivity {
 		return super.onCreateOptionsMenu(menu);
 	}
 
-	protected void onSearchViewQueryChanged(String query, boolean isSubmitted) {
-		Intent intent = new Intent();
-		intent.putExtra("keyword", query);
-		intent.putExtra("submit", isSubmitted);
-	
-		contentSwitcher.postIntent(Frame.Dictionary, intent);
-	}
-
-	protected void onSearchViewChange(boolean isOpen) {
-		contentSwitcher.update(Frame.Dictionary);
-
-	}
+//	protected void onSearchViewQueryChanged(String query, boolean isSubmitted) {
+//		Intent intent = new Intent();
+//		intent.putExtra("keyword", query);
+//		intent.putExtra("submit", isSubmitted);
+//	
+//		contentSwitcher.postIntent(Frame.Dictionary, intent);
+//	}
+//
+//	protected void onSearchViewChange(boolean isOpen) {
+//		contentSwitcher.update(Frame.Dictionary);
+//
+//	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -177,8 +167,8 @@ public class LACActivity extends SlidingFragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void updateFrame(Frame frame) {
-		contentSwitcher.update(frame);
+	public void showFragment(FragmentType type) {
+		fragmentSwitcher.show(type);
 	}
 	
 	public Configuration getConfig() { 
@@ -202,5 +192,13 @@ public class LACActivity extends SlidingFragmentActivity {
 		}
 		return super.onKeyDown(keyCode, event);
 	}
-	
+
+	public void onServiceConnected() {
+		showFragment(FragmentType.Dictionary);
+	}
+		
+	public void onServiceDisconnected() {
+		// TODO Auto-generated method stub
+		
+	}
 }

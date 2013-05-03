@@ -59,90 +59,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		
 		initListView(viewSwitcher);
 		initWebView(viewSwitcher);
-		
-		
-		pullList = (PullToRefreshListView) viewSwitcher.findViewById(R.id.pull_refresh_list);
-		
-		adapter = new DictionaryFragmentListAdapter(this.getLACActivity(), this.getLACActivity().getServiceAccess(), this);
-		
-		pullList = (PullToRefreshListView) viewSwitcher.findViewById(R.id.pull_refresh_list);
-		pullList.setMode(Mode.PULL_FROM_END);
-		pullList.setOnRefreshListener(this);
-		pullList.setOnItemClickListener(this);
-	
-		pullList.setAdapter(adapter);
-		
-		gestureDetector = new GestureDetector(this.getLACActivity(), new OnGestureListener() {
 
-			@Override
-			public boolean onDown(MotionEvent e) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public boolean onFling(MotionEvent start, MotionEvent end, float velocityX, float velocityY) {
-	            int distanceX = Math.abs((int) end.getX() - (int) start.getX());
-	            int distanceY = Math.abs((int) end.getY() - (int) start.getY());
-
-	            if (distanceX < 100 || distanceX < (2*distanceY)
-	                    || Math.abs(velocityX) < 800) {
-	                return false;
-	            }
-	            boolean flingToPrevious = velocityX > 0;
-	            Log.d(Tag, "fling previous : " + flingToPrevious);
-	            
-	            onWebViewFling(flingToPrevious);
-
-	            return true;
-	        }
-
-			@Override
-			public void onLongPress(MotionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public boolean onScroll(MotionEvent e1, MotionEvent e2,
-					float distanceX, float distanceY) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public void onShowPress(MotionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public boolean onSingleTapUp(MotionEvent e) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-			
-		});
-		
-		webView = (WebView) viewSwitcher.findViewById(R.id.webView1);
-		webView.setOnTouchListener(new OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View view, MotionEvent event) {
-				return onWebViewTouch(event);
-			}
-			
-		});
-		webView.setOnKeyListener(new OnKeyListener() {
-
-			@Override
-			public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
-				Log.d(Tag, "setOnKeyListener : " + arg1);
-				return false;
-			}
-			
-		});
-		
 		Button btn = (Button) viewSwitcher.findViewById(R.id.button1);
 		btn.setOnClickListener(new OnClickListener() {
  
@@ -171,6 +88,34 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 
 	private void initWebView(View parent) {
 		
+		gestureDetector = new GestureDetector(this.getLACActivity(), new GestureDetector.SimpleOnGestureListener() {
+			@Override
+			public boolean onFling(MotionEvent start, MotionEvent end, float velocityX, float velocityY) {
+	            int distanceX = Math.abs((int) end.getX() - (int) start.getX());
+	            int distanceY = Math.abs((int) end.getY() - (int) start.getY());
+
+	            if (distanceX < 100 || distanceX < (2*distanceY)
+	                    || Math.abs(velocityX) < 800) {
+	                return false;
+	            }
+	            boolean flingToPrevious = velocityX > 0;
+	            Log.d(Tag, "fling previous : " + flingToPrevious);
+	            
+	            onWebViewFling(flingToPrevious);
+
+	            return true;
+	        }			
+		});
+		
+		webView = (WebView) viewSwitcher.findViewById(R.id.webView1);
+		webView.setOnTouchListener(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View view, MotionEvent event) {
+				return gestureDetector.onTouchEvent(event);
+			}
+			
+		});		
 	}
 
 	protected void onWebViewFling(boolean flingToPrevious) {
@@ -178,10 +123,6 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 			viewSwitcher.showPrevious();
 			i = 0;
 		}
-	}
-
-	protected boolean onWebViewTouch(MotionEvent event) {
-		return gestureDetector.onTouchEvent(event);
 	}
 
 	protected void OnClick() {

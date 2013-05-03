@@ -4,31 +4,26 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import jie.android.lac.R;
-import jie.android.lac.app.LACActivity;
-import jie.android.lac.app.ContentSwitcher.Frame;
+import jie.android.lac.app.FragmentSwitcher.FragmentType;
 import jie.android.lac.service.AssetsHelper;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ToggleButton;
 
-public class WelcomeFragment extends ContentFragment {
+public class WelcomeFragment extends BaseFragment {
 
 	private static final String TAG = "WelcomeContent";
 
 	public WelcomeFragment() {
-		super(R.layout.fragment_welcome);
+		super();
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = super.onCreateView(inflater, container, savedInstanceState);
-		
-		Log.d(TAG, "onCreateView");
+		View v = inflater.inflate(R.layout.fragment_welcome, container, false);
 		
 		ToggleButton btn = (ToggleButton) v.findViewById(R.id.toggleButton1);
 		btn.setOnClickListener(new OnClickListener() {
@@ -44,12 +39,10 @@ public class WelcomeFragment extends ContentFragment {
 	}
 
 	protected void onButtonClick() {
-		//initData(0);
-		
-		
-		LACActivity activity = this.getLACActivity();//(LACActivity) this.getSherlockActivity();
-		
-		activity.updateFrame(Frame.Dictionary);// .Wizard);// .Dictionary);// .Setting);
+		getLACActivity().showFragment(FragmentType.Dictionary);
+//		LACActivity activity = this.getLACActivity();//(LACActivity) this.getSherlockActivity();
+//		
+//		activity.updateFrame(Frame.Dictionary);// .Wizard);// .Dictionary);// .Setting);
 	}
 	
 	private void initData(int flag) {
