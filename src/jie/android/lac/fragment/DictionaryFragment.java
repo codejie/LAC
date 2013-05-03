@@ -30,7 +30,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ViewSwitcher;
 
-public class DictionaryFragment extends ContentFragment implements OnRefreshResultListener, OnRefreshListener<ListView>, OnItemClickListener  {
+public class DictionaryFragment extends BaseFragment implements OnRefreshResultListener, OnRefreshListener<ListView>, OnItemClickListener  {
 	
 	private static final String Tag = DictionaryFragment.class.getSimpleName();
 
@@ -44,18 +44,24 @@ public class DictionaryFragment extends ContentFragment implements OnRefreshResu
 	
 	private int i = 0;
 	
-	public DictionaryFragment() {
-		//super(R.layout.fragment_dictionary_list);
-		super(R.layout.fragment_dictionary_switcher);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		
-		this.setHasOptionsMenu(true);
-	}
+		setHasOptionsMenu(true);
+	}	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,	Bundle savedInstanceState) {
-		View v = super.onCreateView(inflater, container, savedInstanceState);
+		View v = inflater.inflate(R.layout.fragment_dictionary_switcher, container, false);
 
 		viewSwitcher = (ViewSwitcher) v.findViewById(R.id.viewSwitcher);
+		
+		initListView(viewSwitcher);
+		initWebView(viewSwitcher);
+		
+		
+		pullList = (PullToRefreshListView) viewSwitcher.findViewById(R.id.pull_refresh_list);
 		
 		adapter = new DictionaryFragmentListAdapter(this.getLACActivity(), this.getLACActivity().getServiceAccess(), this);
 		
@@ -148,6 +154,23 @@ public class DictionaryFragment extends ContentFragment implements OnRefreshResu
 		});		
 		
 		return v;
+	}
+
+	private void initListView(View parent) {
+		pullList = (PullToRefreshListView) parent.findViewById(R.id.pull_refresh_list);
+		pullList.setMode(Mode.PULL_FROM_END);
+			
+		//listener
+		pullList.setOnRefreshListener(this);
+		pullList.setOnItemClickListener(this);
+		
+		//adapter
+		adapter = new DictionaryFragmentListAdapter(getLACActivity(), getLACActivity().getServiceAccess(), this);		
+		pullList.setAdapter(adapter);
+	}
+
+	private void initWebView(View parent) {
+		
 	}
 
 	protected void onWebViewFling(boolean flingToPrevious) {

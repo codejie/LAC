@@ -15,6 +15,8 @@ import com.slidingmenu.lib.SlidingMenu;
 public abstract class BaseFragment extends SherlockFragment {
 	
 	private int menuId = -1;
+	private SlidingBaseFragment leftFragment = null;
+	private SlidingBaseFragment rightFragment = null;
 
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
@@ -51,10 +53,17 @@ public abstract class BaseFragment extends SherlockFragment {
 	}
 	
 	protected void replaceSlidingFragment(boolean left, final SlidingBaseFragment fragment) {
-		getLACActivity().getSupportFragmentManager().beginTransaction().replace((left ? R.id.lac_left : R.id.lac_right), fragment).commit();
+		if (left) {
+			getLACActivity().getSupportFragmentManager().beginTransaction().replace(R.id.lac_left, fragment).commit();
+			leftFragment = fragment;
+		}
+		else {
+			getLACActivity().getSupportFragmentManager().beginTransaction().replace(R.id.lac_right, fragment).commit();
+			rightFragment = fragment;
+		}
 	}
 	
-	public void showFragment(final FragmentType type) {
+	protected void showFragment(final FragmentType type) {
 		getLACActivity().showFragment(type);
 	}
 	
@@ -69,5 +78,40 @@ public abstract class BaseFragment extends SherlockFragment {
 	
 	public void onIntent(final Intent intent) {
 		
-	}	
+	}
+	
+	public final SlidingBaseFragment getLeftSlidingFragment() {
+		return leftFragment;
+	}
+	
+	public final SlidingBaseFragment getRightSlidingFragment() {
+		return rightFragment;
+	}
+	
+	public void enableSlidingFragment(boolean enableLeft, boolean enableRight) {
+		if (leftFragment != null && rightFragment != null) {
+			if (enableLeft && enableRight) {
+				getLACActivity().getSlidingMenu().setMode(SlidingMenu.LEFT_RIGHT);
+			} else if (enableLeft) {
+				getLACActivity().getSlidingMenu().setMode(SlidingMenu.LEFT);
+			} else if (enableRight) {
+				getLACActivity().getSlidingMenu().setMode(SlidingMenu.RIGHT);
+			} else {
+				getLACActivity().getSlidingMenu().setSlidingEnabled(false);
+			}
+		} else if (leftFragment != null) {
+			if (enableLeft) {
+				getLACActivity().getSlidingMenu().setMode(SlidingMenu.LEFT);
+			} else {
+				getLACActivity().getSlidingMenu().setSlidingEnabled(false);
+			}
+		} else {
+			if (enableRight) {
+				getLACActivity().getSlidingMenu().setMode(SlidingMenu.RIGHT);
+			} else {
+				getLACActivity().getSlidingMenu().setSlidingEnabled(false);
+			}			
+		}
+	}
+	
 }
