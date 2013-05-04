@@ -39,4 +39,10 @@ public class ServiceStub extends Access.Stub {
 
 		return ret;
 	}
+
+	@Override
+	public String queryWordResult(int index) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

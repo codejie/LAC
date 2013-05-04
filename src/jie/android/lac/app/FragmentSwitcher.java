@@ -129,4 +129,8 @@ public class FragmentSwitcher {
 		
 		return fragment.onKeyDown(keyCode, event);
 	}
+	
+	public FragmentType getCurrentFragmentType() {
+		return current;
+	}
 }

@@ -42,13 +42,12 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	private WebView webView = null;
 	private GestureDetector gestureDetector = null;
 	
-	private int i = 0;
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setHasOptionsMenu(true);
+		this.setSlidingMenu(new ColorFragment(this, R.color.red), new ColorFragment(this, R.color.white));
+		this.setOptionsMenu(R.menu.dictionary);
 	}	
 
 	@Override
@@ -120,8 +119,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 
 	protected void onWebViewFling(boolean flingToPrevious) {
 		if (flingToPrevious) {
-			viewSwitcher.showPrevious();
-			i = 0;
+			showWordList();
 		}
 	}
 
@@ -131,22 +129,18 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		viewSwitcher.showNext();
-		i = 1;
-		this.getLACActivity().supportInvalidateOptionsMenu();
+		showWordResult();
 	}
 
 	@Override
 	public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 		adapter.refresh();
-		this.getLACActivity().supportInvalidateOptionsMenu();
 	}	
 
 	@Override
 	public void onLoadResultEnd(int count, int total) {
 		pullList.onRefreshComplete();
 	}
-
 
 	@Override
 	public void onIntent(Intent intent) {
@@ -159,17 +153,15 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		super.onIntent(intent);
 	}
 
-	@Override
-	public void onPrepareOptionsMenu(Menu menu) {
-		// TODO Auto-generated method stub
-		super.onPrepareOptionsMenu(menu);
-		if (i == 1) {
-			menu.clear(); 
-		} else {
-			this.getLACActivity().getSupportMenuInflater().inflate(R.menu.dictionary, menu);
-		}
+	private void showWordList() {		
+		viewSwitcher.showPrevious();
+		setOptionsMenu(R.menu.dictionary);		
 	}
 	
+	private void showWordResult() {
+		viewSwitcher.showNext();
+		setOptionsMenu(R.menu.lac);
+	}
 }
 
 

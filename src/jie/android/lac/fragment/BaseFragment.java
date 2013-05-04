@@ -17,7 +17,7 @@ public abstract class BaseFragment extends SherlockFragment {
 	private int menuId = -1;
 	private SlidingBaseFragment leftFragment = null;
 	private SlidingBaseFragment rightFragment = null;
-
+	
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
@@ -38,29 +38,31 @@ public abstract class BaseFragment extends SherlockFragment {
 			getLACActivity().getSlidingMenu().setMode(SlidingMenu.LEFT_RIGHT);
 			
 			replaceSlidingFragment(true, left);
-			replaceSlidingFragment(false, right);			
+			replaceSlidingFragment(false, right);
+			
+			getLACActivity().getSlidingMenu().setSlidingEnabled(true);
 		} else if (left != null) {
 			getLACActivity().getSlidingMenu().setMode(SlidingMenu.LEFT);
 			
 			replaceSlidingFragment(true, left);
+			
+			getLACActivity().getSlidingMenu().setSlidingEnabled(true);
 		} else if (right != null) {
 			getLACActivity().getSlidingMenu().setMode(SlidingMenu.RIGHT);
 			
 			replaceSlidingFragment(false, right);
+			
+			getLACActivity().getSlidingMenu().setSlidingEnabled(true);
 		} else {
 			getLACActivity().getSlidingMenu().setSlidingEnabled(false);
 		}
+		
+		leftFragment = left;
+		rightFragment = right;
 	}
 	
 	protected void replaceSlidingFragment(boolean left, final SlidingBaseFragment fragment) {
-		if (left) {
-			getLACActivity().getSupportFragmentManager().beginTransaction().replace(R.id.lac_left, fragment).commit();
-			leftFragment = fragment;
-		}
-		else {
-			getLACActivity().getSupportFragmentManager().beginTransaction().replace(R.id.lac_right, fragment).commit();
-			rightFragment = fragment;
-		}
+		getLACActivity().getSupportFragmentManager().beginTransaction().replace((left ? R.id.lac_left : R.id.lac_right), fragment).commit();
 	}
 	
 	protected void showFragment(final FragmentType type) {
@@ -68,8 +70,11 @@ public abstract class BaseFragment extends SherlockFragment {
 	}
 	
 	protected void setOptionsMenu(int menuId) {
-		this.menuId = menuId;
-		getLACActivity().supportInvalidateOptionsMenu();
+		if (this.menuId != menuId) {
+			this.menuId = menuId;
+			setHasOptionsMenu(true);
+			getLACActivity().supportInvalidateOptionsMenu();
+		}
 	}
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -113,5 +118,5 @@ public abstract class BaseFragment extends SherlockFragment {
 			}			
 		}
 	}
-	
+
 }

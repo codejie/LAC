@@ -8,15 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-public class ColorFragment extends Fragment {
+public class ColorFragment extends SlidingBaseFragment {
 	
 	private int mColorRes = -1;
 	
-	public ColorFragment() { 
-		this(R.color.green);
-	}
-	
-	public ColorFragment(int colorRes) {
+	public ColorFragment(final BaseFragment parent, int colorRes) {
+		super(parent);
+		
 		mColorRes = colorRes;
 		setRetainInstance(true);
 	}

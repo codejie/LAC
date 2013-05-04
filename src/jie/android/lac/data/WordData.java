@@ -10,7 +10,7 @@ public class WordData implements Parcelable {
 		@Override
 		public WordData createFromParcel(Parcel source) {
 			WordData data = new WordData();
-			data.setId(source.readInt());
+			data.setIndex(source.readInt());
 			data.setWord(source.readString());
 			return data;
 		}
@@ -24,7 +24,7 @@ public class WordData implements Parcelable {
     };	
 	
 
-	private int id = -1;
+	private int index = -1;
 	private String word = null;
 	
 	public WordData() {
@@ -32,7 +32,7 @@ public class WordData implements Parcelable {
 	}
 	
 	public WordData(int id, final String word) {
-		this.id = id;
+		this.index = id;
 		this.word = word;
 	}
 	
@@ -43,7 +43,7 @@ public class WordData implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flag) {
-		dest.writeInt(id);
+		dest.writeInt(index);
 		dest.writeString(word);
 	}
 
@@ -53,11 +53,11 @@ public class WordData implements Parcelable {
 	}
 
 	public int getId() {
-		return id;
+		return index;
 	}
 
-	protected void setId(int value) {
-		id = value;
+	protected void setIndex(int value) {
+		index = value;
 	}
 
 	public final String getWord() {
