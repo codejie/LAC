@@ -3,21 +3,21 @@ package jie.android.lac.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class WordData implements Parcelable {
+public class WordInfo implements Parcelable {
 	
-    public static final Parcelable.Creator<WordData> CREATOR = new Parcelable.Creator<WordData>() {
+    public static final Parcelable.Creator<WordInfo> CREATOR = new Parcelable.Creator<WordInfo>() {
 
 		@Override
-		public WordData createFromParcel(Parcel source) {
-			WordData data = new WordData();
+		public WordInfo createFromParcel(Parcel source) {
+			WordInfo data = new WordInfo();
 			data.setIndex(source.readInt());
 			data.setWord(source.readString());
 			return data;
 		}
 
 		@Override
-		public WordData[] newArray(int size) {
-			return new WordData[size];
+		public WordInfo[] newArray(int size) {
+			return new WordInfo[size];
 		}
 
 
@@ -27,11 +27,11 @@ public class WordData implements Parcelable {
 	private int index = -1;
 	private String word = null;
 	
-	public WordData() {
+	public WordInfo() {
 		
 	}
 	
-	public WordData(int id, final String word) {
+	public WordInfo(int id, final String word) {
 		this.index = id;
 		this.word = word;
 	}

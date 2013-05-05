@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jie.android.lac.app.ServiceAccess;
-import jie.android.lac.data.WordData;
+import jie.android.lac.data.Word;
 import jie.android.lac.service.aidl.Access;
 
 import android.content.Context;
@@ -28,7 +28,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	private Access access = null;
 	private OnRefreshResultListener resultListener = null;
 	
-	private ArrayList<WordData> dataArray = new ArrayList<WordData>();
+	private ArrayList<Word.Info> dataArray = new ArrayList<Word.Info>();
 	
 	private int maxItem = 15;
 	private String condition = null;
@@ -82,7 +82,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 		@Override
 		protected Integer doInBackground(Void... params) {
 			try {
-				List<WordData> l = access.queryWordData(condition, dataArray.size(), maxItem);
+				List<Word.Info> l = access.queryWordInfo(condition, dataArray.size(), maxItem);
 				if (l != null) {
 					dataArray.addAll(l);
 					return l.size();
