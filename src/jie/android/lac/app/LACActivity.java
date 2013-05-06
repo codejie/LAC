@@ -10,6 +10,7 @@ import com.slidingmenu.lib.app.SlidingFragmentActivity;
 
 import jie.android.lac.R;
 import jie.android.lac.app.FragmentSwitcher.FragmentType;
+import jie.android.lac.service.aidl.Access;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -175,8 +176,8 @@ public class LACActivity extends SlidingFragmentActivity {
 		return configuration;
 	}
 	
-	public ServiceAccess getServiceAccess() {
-		return serviceAccess;
+	public Access getServiceAccess() {
+		return serviceAccess.getAccess();
 	}
 
 	@Override

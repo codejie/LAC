@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import jie.android.lac.app.Configuration;
+import jie.android.lac.data.Dictionary;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -20,16 +21,26 @@ public class LACService extends Service {
 	private ServiceStub binder = null;
 	
 	private SharedPreferences prefs = null;
-
+	private String dataPath = null;
+	
 	private DBAccess dbAccess = null;
+	private Dictionary dictionary = null;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
-		binder = new ServiceStub(dbAccess);
+		binder = new ServiceStub(this);
 		// TODO Auto-generated method stub
 		return binder;
 	}
 
+	public final DBAccess getDBAccess() {
+		return dbAccess;
+	}
+	
+	public final Dictionary getDictionary() {
+		return dictionary;
+	}
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -37,11 +48,15 @@ public class LACService extends Service {
 		prefs  = getSharedPreferences("LAC", Context.MODE_PRIVATE);
 		Log.d(Tag, "service create : " + prefs.getInt(Configuration.PREFS_DATA_LOCATION, 0));
 	
+		dataPath = this.getDatabasePath(DBAccess.FILE).getAbsolutePath() + File.pathSeparator;
+		
 		initDBAccess();
+		initDictionary();
 	}
 
 	@Override
 	public void onDestroy() {
+		releaseDictionary();
 		releaseDBAccess();
 		super.onDestroy();
 	}
@@ -55,8 +70,20 @@ public class LACService extends Service {
 	}
 
 	private void releaseDBAccess() {
-		// TODO Auto-generated method stub
-		
+		if (dbAccess != null) {
+			dbAccess.close();
+		}
+	}
+	
+	private void initDictionary() {
+		dictionary = new Dictionary(dbAccess, dataPath);
+		dictionary.load();
+	}
+	
+	private void releaseDictionary() {
+		if (dictionary != null) {
+			dictionary.close();
+		}
 	}
 	
 	private final String initData(int flag) {

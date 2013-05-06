@@ -22,6 +22,12 @@ public class DBAccess {// extends SQLiteOpenHelper {
 		db = SQLiteDatabase.openOrCreateDatabase(name, null);
 	}
 	
+	public void close() {
+		if (db != null) {
+			db.close();
+		}
+	}
+	
 	public int getState() {
 		Cursor cursor = db.query("dict_info", new String[] { "offset" }, "idx=0", null, null, null, null);
 		
@@ -44,6 +50,17 @@ public class DBAccess {// extends SQLiteOpenHelper {
 		sql += " LIMIT " + limit + " OFFSET " + offset ;
 		
 		return db.rawQuery(sql, null);
+	}
+
+	public Cursor queryDictionaryInfo() {
+		Cursor cursor = db.query("dict_info", new String[] {"idx", "title", "file", "offset", "d_decoder", "x_decoder"},
+				null, null, null, null, null);
+		return cursor;
+	}
+	
+	public Cursor queryBlockData(int index) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

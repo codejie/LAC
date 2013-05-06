@@ -24,7 +24,6 @@ public class Word {
 			public Info[] newArray(int size) {
 				return new Info[size];
 			}
-
 	    };	
 		
 

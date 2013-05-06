@@ -1,5 +1,8 @@
 package jie.android.lac.fragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -8,10 +11,12 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import jie.android.lac.R;
+import jie.android.lac.data.Dictionary;
 import jie.android.lac.fragment.data.DictionaryFragmentListAdapter;
 import jie.android.lac.fragment.data.DictionaryFragmentListAdapter.OnRefreshResultListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
@@ -125,6 +130,17 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 
 	protected void OnClick() {
 		adapter.load("z");
+		try {
+			List<Dictionary.SimpleInfo> dictInfo = this.getLACActivity().getServiceAccess().getDictionarySimpleInfo();
+			
+			for (final Dictionary.SimpleInfo info : dictInfo) {
+				Log.d(Tag, "Dict = " + info.getIndex() + " - " + info.getTitle());
+			}
+			
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

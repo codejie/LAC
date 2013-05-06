@@ -10,7 +10,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 public class ServiceAccess {
-	private static final String Tag = ServiceAccess.class.getName();
+	private static final String Tag = ServiceAccess.class.getSimpleName();
 
 	private Access access = null;
 	private LACActivity activity = null;

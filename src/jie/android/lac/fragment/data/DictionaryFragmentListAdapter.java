@@ -33,9 +33,9 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	private int maxItem = 15;
 	private String condition = null;
 	
-	public DictionaryFragmentListAdapter(Context context, ServiceAccess service, OnRefreshResultListener resultListener) {
+	public DictionaryFragmentListAdapter(Context context, Access access, OnRefreshResultListener resultListener) {
 		this.context = context;
-		this.access = service.getAccess();
+		this.access = access;
 		this.resultListener = resultListener;
 	}
 	
