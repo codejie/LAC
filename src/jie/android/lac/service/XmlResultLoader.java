@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
-public class DictFileAccess {
+public class XmlResultLoader {
 
 	public enum DecoderType {
 		
@@ -35,7 +35,7 @@ public class DictFileAccess {
 		
 	}
 	
-	private class Decoder {
+	private static class Decoder {
 	
 		private int index = -1;
 		private Charset charset = null;
@@ -92,15 +92,15 @@ public class DictFileAccess {
 		}		
 	}
 	
-	private int currentDict	= -1;
-	private int currentIndex = -1;
-	private int currentStart = -1;
+	private static int currentDict	= -1;
+	private static int currentIndex = -1;
+	private static int currentStart = -1;
 //	private Decoder wordDecoder = null;
-	private Decoder xmlDecoder = null;
+	private static Decoder xmlDecoder = null;
 
-	private final byte[] blockCache = new byte[2 * 16 * 1024];
+	private static final byte[] blockCache = new byte[2 * 16 * 1024];
 	
-	public final int setBlockCache(int dictid, final RandomAccessFile file, int index, int start, int offset, int size) {
+	public static final int setBlockCache(int dictid, final RandomAccessFile file, int index, int start, int offset, int size) {
 		if(currentDict == dictid && currentIndex == index) {
 			return 0;
 		}
@@ -117,14 +117,14 @@ public class DictFileAccess {
 		if(decompressBlock(in, size, blockCache) != 0)
 			return -1;
 
-		this.currentDict = dictid;
-		this.currentIndex = index;
-		this.currentStart = start;
+		currentDict = dictid;
+		currentIndex = index;
+		currentStart = start;
 		
 		return 0;
 	}
 	
-	private int decompressBlock(ByteBuffer in, int size, byte[] out) {
+	private static int decompressBlock(ByteBuffer in, int size, byte[] out) {
 		final Inflater inflater = new Inflater();
 		final InflaterInputStream stream = new InflaterInputStream(new ByteArrayInputStream(in.array(), 0, size), inflater, size);
 		
@@ -137,7 +137,7 @@ public class DictFileAccess {
 		return 0;
 	}
 
-	public final String getXml(int decoder, int offset, int length) {
+	public static final String getXml(int decoder, int offset, int length) {
 		if(xmlDecoder == null || xmlDecoder.getIndex() != decoder) {
 			try {
 				xmlDecoder = new Decoder(decoder);

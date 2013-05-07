@@ -3,6 +3,8 @@ package jie.android.lac.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import jie.java.android.demodictionaryoflac2.data.Word.XmlData;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -71,7 +73,7 @@ public class Word {
 		}
 	}
 	
-	public class Index {
+	public class ResultIndex {
 		
 	}
 	
@@ -103,9 +105,17 @@ public class Word {
 
 		@Override
 		public void writeToParcel(Parcel dest, int flag) {
-			// TODO Auto-generated method stub
-			
+			// TODO Auto-generated method stub			
 		}
 		
+		private List<XmlData> xmlData = null;
+		
+		public void addXmlData(int dictid, final ArrayList<String> xml) {
+			xmlData.add(new XmlData(dictid, xml));
+		}
+		
+		public final List<XmlData> getXmlData() {
+			return xmlData;
+		}			
 	}
 }

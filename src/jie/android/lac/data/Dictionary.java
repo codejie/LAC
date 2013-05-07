@@ -9,6 +9,7 @@ import java.util.List;
 
 import jie.android.lac.data.Word.Info;
 import jie.android.lac.service.DBAccess;
+import jie.android.lac.service.XmlResultLoader;
 
 import android.database.Cursor;
 import android.os.Parcel;
@@ -96,6 +97,29 @@ public class Dictionary {
 		}
 	}
 	
+	//XmlIndex
+	public final class XmlIndex {
+		public int offset = -1;
+		public int length = -1;
+		public int block1 = -1;
+		public int block2 = -1;
+		
+		public XmlIndex() {			
+		}
+		
+		public XmlIndex(int offset, int length, int block1) {
+			this.offset = offset;
+			this.length = length;
+			if (block1 >= 0) {
+				this.block1 = block1;
+				this.block2 = -1;
+			} else {
+				this.block1 = -block1;
+				this.block2 = this.block1 + 1;
+			}
+		}
+	}
+	
 	//entity
 	public final class Entity { 
 		public final class BlockData {
@@ -114,11 +138,11 @@ public class Dictionary {
 			this.info = info;
 		}
 
-		private void init(final String dataPath) {
+		private void init(final DBAccess dbAccess, final String dataPath) {
 			try {
 				fileAccess = new RandomAccessFile(dataPath + info.file, "r");
 				
-				loadBlockData();
+				loadBlockData(dbAccess);
 				
 			} catch (FileNotFoundException e) {
 				Log.e(Tag, "init() failed - " + e.getMessage());
@@ -135,7 +159,7 @@ public class Dictionary {
 			}
 		}
 		
-		private boolean loadBlockData() {
+		private boolean loadBlockData(final DBAccess dbAccess) {
 			Cursor cursor = dbAccess.queryBlockData(info.index);
 			if(cursor != null) {
 				if (cursor.moveToFirst()) {
@@ -156,6 +180,57 @@ public class Dictionary {
 			return true;
 		}
 		
+		public final List<String> getWordXmlResult(final DBAccess dbAccess, int index) {
+			ArrayList<String> result = new ArrayList<String>();
+			//get self xml
+			getWordSelfXmlResult(dbAccess, index, result);
+			//get ref xml
+			//getWordRefXmlResult(dbAccess, index);
+			if (result.size() > 0) {
+				return result;
+			} else {
+				return null;
+			}			
+		}
+		
+		private void getWordSelfXmlResult(final DBAccess dbAccess, int index, List<String> result) {
+			Cursor cursor = dbAccess.queryWordXmlIndex(info.index, index);
+			if (cursor != null) {
+				try {
+					if (cursor.moveToFirst()) {
+						do {
+							XmlIndex xmlIndex = new XmlIndex(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2));
+							String xml = getXmlResult(xmlIndex);
+							if (xml != null) {
+								result.add(xml);
+							}
+							
+						} while (cursor.moveToNext());
+					}
+				} finally {
+					cursor.close();
+				}
+			}
+		}
+
+		private String getXmlResult(XmlIndex xmlIndex) {
+			if(xmlIndex.block1 > blockData.size())
+				return null;
+			final BlockData block = blockData.get(xmlIndex.block1);
+			
+			int start = block.start;
+			int offset = block.offset;
+			int size = block.length;
+			if(xmlIndex.block2 != -1) {
+				size += blockData.get(xmlIndex.block2).length;
+			}			
+			
+			if(XmlResultLoader.setBlockCache(info.index, fileAccess, xmlIndex.block1, start, offset, size) != 0)
+				return null;
+			
+			return XmlResultLoader.getXml(info.x_decoder, info.offset + xmlIndex.offset, xmlIndex.length);
+		}
+
 		public final Info getInfo() {
 			return info;
 		}
@@ -179,7 +254,7 @@ public class Dictionary {
 					do {
 						Info info = new Info(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5));
 						Entity entity = new Entity(info);
-						entity.init(dataPath);
+						entity.init(dbAccess, dataPath);
 						mapEntity.put(cursor.getInt(0), entity);
 					} while (cursor.moveToNext());
 				}
@@ -204,4 +279,9 @@ public class Dictionary {
 		return ret;
 	}
 	
+	public Word.XmlResult getWordXmlResult(int index) {
+		for (final Entity entity : mapEntity.values()) {
+			
+		}
+	}
 }
