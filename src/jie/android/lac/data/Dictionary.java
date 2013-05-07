@@ -193,7 +193,7 @@ public class Dictionary {
 	public void close() {
 		for(final Entity entity : mapEntity.values()) {
 			entity.close();
-		}		
+		}
 	}
 	
 	public List<SimpleInfo> getSimpleInfo() {

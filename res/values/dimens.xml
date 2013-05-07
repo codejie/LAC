@@ -2,5 +2,7 @@
 <resources>
     <dimen name="shadow_width">15dp</dimen>
     <dimen name="sliding_offset">65dp</dimen>
+    <dimen name="normal_height">2dp</dimen>
+    <dimen name="expanded_height">4dp</dimen>
     
 </resources>

@@ -1,6 +1,7 @@
 package jie.android.lac.fragment;
 
 import jie.android.lac.R;
+import jie.android.lac.fragment.sliding.SlidingBaseFragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;

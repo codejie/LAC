@@ -12,8 +12,10 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import jie.android.lac.R;
 import jie.android.lac.data.Dictionary;
+import jie.android.lac.data.Dictionary.SimpleInfo;
 import jie.android.lac.fragment.data.DictionaryFragmentListAdapter;
 import jie.android.lac.fragment.data.DictionaryFragmentListAdapter.OnRefreshResultListener;
+import jie.android.lac.fragment.sliding.DictionaryListSlidingFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -47,12 +49,17 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	private WebView webView = null;
 	private GestureDetector gestureDetector = null;
 	
+	private List<Dictionary.SimpleInfo> dictInfo = null;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		this.setSlidingMenu(new ColorFragment(this, R.color.red), new ColorFragment(this, R.color.white));
+		//this.setSlidingMenu(new ColorFragment(this, R.color.red), new ColorFragment(this, R.color.white));
+		this.setSlidingMenu(new DictionaryListSlidingFragment(this), null);
 		this.setOptionsMenu(R.menu.dictionary);
+		
+		initData();
 	}	
 
 	@Override
@@ -122,6 +129,14 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		});		
 	}
 
+	private void initData() {
+		try {
+			dictInfo = this.getLACActivity().getServiceAccess().getDictionarySimpleInfo();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	protected void onWebViewFling(boolean flingToPrevious) {
 		if (flingToPrevious) {
 			showWordList();
@@ -130,17 +145,17 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 
 	protected void OnClick() {
 		adapter.load("z");
-		try {
-			List<Dictionary.SimpleInfo> dictInfo = this.getLACActivity().getServiceAccess().getDictionarySimpleInfo();
-			
+//		try {
+//			List<Dictionary.SimpleInfo> dictInfo = this.getLACActivity().getServiceAccess().getDictionarySimpleInfo();
+//			
 			for (final Dictionary.SimpleInfo info : dictInfo) {
 				Log.d(Tag, "Dict = " + info.getIndex() + " - " + info.getTitle());
 			}
-			
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//			
+//		} catch (RemoteException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	@Override
@@ -177,6 +192,10 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	private void showWordResult() {
 		viewSwitcher.showNext();
 		setOptionsMenu(R.menu.lac);
+	}
+
+	public List<Dictionary.SimpleInfo> getDictionarySimpleInfo() {
+		return dictInfo;		
 	}
 }
 

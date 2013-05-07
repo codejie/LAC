@@ -4,6 +4,7 @@ import jie.android.lac.R;
 
 import jie.android.lac.app.FragmentSwitcher.FragmentType;
 import jie.android.lac.app.LACActivity;
+import jie.android.lac.fragment.sliding.SlidingBaseFragment;
 import android.content.Intent;
 import android.view.KeyEvent;
 
@@ -28,11 +29,11 @@ public abstract class BaseFragment extends SherlockFragment {
 		}
 	}	
 	
-	protected LACActivity getLACActivity() {
+	public LACActivity getLACActivity() {
 		return (LACActivity) getSherlockActivity();
 	}
 	
-	protected void setSlidingMenu(final SlidingBaseFragment left, final SlidingBaseFragment right) {
+	public void setSlidingMenu(final SlidingBaseFragment left, final SlidingBaseFragment right) {
 		
 		if (left != null && right != null) {
 			getLACActivity().getSlidingMenu().setMode(SlidingMenu.LEFT_RIGHT);
