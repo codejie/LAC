@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.SearchView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
@@ -18,6 +22,7 @@ import jie.android.lac.fragment.data.DictionaryFragmentListAdapter;
 import jie.android.lac.fragment.data.XmlTranslator;
 import jie.android.lac.fragment.data.DictionaryFragmentListAdapter.OnRefreshResultListener;
 import jie.android.lac.fragment.sliding.DictionaryListSlidingFragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,12 +30,14 @@ import android.os.RemoteException;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -66,11 +73,16 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 			}			
 			super.onPostExecute(result);
 		}
-	}	
+	}
+	
+	private enum ViewState {
+		WORD_LIST, WORD_RESULT;
+	}
 	
 	private static final String Tag = DictionaryFragment.class.getSimpleName();
 
 	private ViewSwitcher viewSwitcher = null;
+	private ViewState viewState = ViewState.WORD_LIST;
 	
 	private PullToRefreshListView pullList = null;	
 	private DictionaryFragmentListAdapter adapter = null;
@@ -78,6 +90,8 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	private TextView webTextView = null;
 	private WebView webView = null;
 	private GestureDetector gestureDetector = null;
+	
+	private SearchView searchView = null;
 	
 	private HashMap<Integer, Dictionary.SimpleInfo> dictInfo = null;
 	
@@ -90,8 +104,8 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		super.onCreate(savedInstanceState);
 		
 		//this.setSlidingMenu(new ColorFragment(this, R.color.red), new ColorFragment(this, R.color.white));
-		this.setSlidingMenu(new DictionaryListSlidingFragment(this), null);
-		this.setOptionsMenu(R.menu.dictionary);
+		setSlidingMenu(new DictionaryListSlidingFragment(this), null);
+		setOptionsMenu(R.menu.dictionary_word_list);
 		
 		initData();
 	}	
@@ -102,8 +116,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 
 		viewSwitcher = (ViewSwitcher) v.findViewById(R.id.viewSwitcher);
 		
-		initAnimation();
-		
+		initAnimation();		
 		initListView(viewSwitcher);
 		initWebView(viewSwitcher);
 
@@ -130,11 +143,11 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
         
 //        if(SCREEN_HEIGHT > SCREEN_WIDTH) {		
 			aniResultIn = new TranslateAnimation(SCREEN_WIDTH, 0, 0, 0);
-			aniResultIn.setDuration(500);
+			aniResultIn.setDuration(300);
 			aniWord = new TranslateAnimation(0, 0, 0, 0);
-			aniWord.setDuration(500);
+			aniWord.setDuration(300);
 			aniResultOut = new TranslateAnimation(0, SCREEN_WIDTH, 0, 0);
-			aniResultOut.setDuration(500);
+			aniResultOut.setDuration(300);
 //        }
 //        else {
 //        	aniResultIn = new TranslateAnimation(0, 0, SCREEN_HEIGHT, 0);
@@ -253,37 +266,34 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		viewSwitcher.setOutAnimation(aniResultOut);
 		
 		viewSwitcher.showPrevious();
-		setOptionsMenu(R.menu.dictionary);		
+		setOptionsMenu(R.menu.dictionary_word_list);
+		
+		enableSlidingFragment(true, true);
+		
+		viewState = ViewState.WORD_LIST;
 	}
 	
 	private void showWordResult(int position, long id) {
 		
+//		InputMethodManager imm = (InputMethodManager)getLACActivity().getSystemService(
+//			      Context.INPUT_METHOD_SERVICE);
+//		imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+		
+		searchView.setIconified(true);
+		
 		LoadWordXmlResultTask task = new LoadWordXmlResultTask();
 		task.execute((Word.Info) adapter.getItem(position - 1));
-//		
-//		Word.XmlResult result = null;
-//		try {
-//			result = getLACActivity().getServiceAccess().queryWordXmlResult((int) id);
-//		} catch (RemoteException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		final Word.Info info = (Word.Info) adapter.getItem(position);		
-//		final String html = XmlResultToHtml(info, result);
-//
-//		if (html != null) {
-//			webTextView.setText(info.getText());
-//			
-//			webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);			
-//		}
 
 		viewSwitcher.clearAnimation();
 		viewSwitcher.setInAnimation(aniResultIn);
 		viewSwitcher.setOutAnimation(aniWord);
 		
 		viewSwitcher.showNext();
-		setOptionsMenu(R.menu.lac);
+		setOptionsMenu(R.menu.dictionary_word_result);
+		
+		enableSlidingFragment(false, false);
+		
+		viewState = ViewState.WORD_RESULT;
 	}
 
 	private String XmlResultToHtml(final Word.Info info, final Word.XmlResult result) {
@@ -318,6 +328,39 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		}
 		return ret;		
 	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+		
+		initSearchView(menu);
+	}
+	
+	private void initSearchView(Menu menu) {
+		if (searchView == null && viewState == ViewState.WORD_LIST) {
+			searchView = (SearchView) menu.findItem(R.id.item1).getActionView();
+			searchView.setIconified(false);
+		}
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (viewState == ViewState.WORD_RESULT) {
+			
+			showWordList();
+			
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	
 }
 
 

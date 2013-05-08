@@ -98,22 +98,27 @@ public abstract class BaseFragment extends SherlockFragment {
 		if (leftFragment != null && rightFragment != null) {
 			if (enableLeft && enableRight) {
 				getLACActivity().getSlidingMenu().setMode(SlidingMenu.LEFT_RIGHT);
+				getLACActivity().getSlidingMenu().setSlidingEnabled(true);
 			} else if (enableLeft) {
 				getLACActivity().getSlidingMenu().setMode(SlidingMenu.LEFT);
+				getLACActivity().getSlidingMenu().setSlidingEnabled(true);
 			} else if (enableRight) {
 				getLACActivity().getSlidingMenu().setMode(SlidingMenu.RIGHT);
+				getLACActivity().getSlidingMenu().setSlidingEnabled(true);
 			} else {
 				getLACActivity().getSlidingMenu().setSlidingEnabled(false);
 			}
 		} else if (leftFragment != null) {
 			if (enableLeft) {
 				getLACActivity().getSlidingMenu().setMode(SlidingMenu.LEFT);
+				getLACActivity().getSlidingMenu().setSlidingEnabled(true);
 			} else {
 				getLACActivity().getSlidingMenu().setSlidingEnabled(false);
 			}
 		} else {
 			if (enableRight) {
 				getLACActivity().getSlidingMenu().setMode(SlidingMenu.RIGHT);
+				getLACActivity().getSlidingMenu().setSlidingEnabled(true);
 			} else {
 				getLACActivity().getSlidingMenu().setSlidingEnabled(false);
 			}			
