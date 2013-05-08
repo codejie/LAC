@@ -27,16 +27,32 @@
             android:text="Button" />
 
     </RelativeLayout>
-
+    
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <WebView
-            android:id="@+id/webView1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+ 	   <TextView
+	        android:id="@+id/textView1"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentRight="true"
+	        android:layout_alignParentTop="true"
+	        android:paddingLeft="5dp"
+	        android:paddingTop="5dp"
+	        android:text="TextView"
+	        android:textSize="30sp"
+	        android:textStyle="bold" />
 
-    </RelativeLayout>
+    	<WebView
+	        android:id="@+id/webView1"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/textView1" />
+
+    </RelativeLayout>    
+    
 
 </ViewSwitcher>

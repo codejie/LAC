@@ -48,7 +48,7 @@ public class LACService extends Service {
 		prefs  = getSharedPreferences("LAC", Context.MODE_PRIVATE);
 		Log.d(Tag, "service create : " + prefs.getInt(Configuration.PREFS_DATA_LOCATION, 0));
 	
-		dataPath = this.getDatabasePath(DBAccess.FILE).getAbsolutePath() + File.pathSeparator;
+		dataPath = this.getDatabasePath(DBAccess.FILE).getParent() + File.separator;
 		
 		initDBAccess();
 		initDictionary();

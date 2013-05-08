@@ -280,8 +280,13 @@ public class Dictionary {
 	}
 	
 	public Word.XmlResult getWordXmlResult(int index) {
+		Word.XmlResult result = new Word.XmlResult();		
 		for (final Entity entity : mapEntity.values()) {
-			
+			List<String> res = entity.getWordXmlResult(dbAccess, index);
+			if (res != null) {
+				result.addXmlData(entity.info.index, res);
+			}
 		}
+		return result;
 	}
 }

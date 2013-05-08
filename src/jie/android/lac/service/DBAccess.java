@@ -7,8 +7,14 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class DBAccess {// extends SQLiteOpenHelper {
+public class DBAccess {
 
+	private static final class Projection {
+		public static final String[] DictionaryInfo = new String[] {"idx", "title", "file", "offset", "d_decoder", "x_decoder"};
+		public static final String[] DictionaryBlock = new String[] {/*"idx", */"offset", "length", "start", "end"};
+		public static final String[] WordIndex = new String[] { "offset", "length", "block1" };
+	}
+	
 	private static final String Tag = DBAccess.class.getName();
 	
 	public static String FILE	=	"lac2.db";
@@ -53,14 +59,15 @@ public class DBAccess {// extends SQLiteOpenHelper {
 	}
 
 	public Cursor queryDictionaryInfo() {
-		Cursor cursor = db.query("dict_info", new String[] {"idx", "title", "file", "offset", "d_decoder", "x_decoder"},
-				null, null, null, null, null);
-		return cursor;
+		return db.query("dict_info", Projection.DictionaryInfo, null, null, null, null, null);
 	}
 	
-	public Cursor queryBlockData(int index) {
-		// TODO Auto-generated method stub
-		return null;
+	public Cursor queryBlockData(int dictIndex) {
+		return db.query("block_info_" + dictIndex, Projection.DictionaryBlock, null, null, null, null, null);
+	}
+
+	public Cursor queryWordXmlIndex(int dictIndex, int wordIndex) {
+		return db.query("word_index_" + dictIndex, Projection.WordIndex, "wordid=" + wordIndex, null, null,null, null);
 	}
 
 }

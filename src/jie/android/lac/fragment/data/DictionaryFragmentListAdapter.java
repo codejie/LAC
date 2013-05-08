@@ -18,6 +18,34 @@ import android.widget.TextView;
 
 public class DictionaryFragmentListAdapter extends BaseAdapter {
 
+	private class LoadDataTask extends AsyncTask<Void, Void, Integer> {
+
+		@Override
+		protected Integer doInBackground(Void... params) {
+			try {
+				List<Word.Info> l = access.queryWordInfo(condition, dataArray.size(), maxItem);
+				if (l != null) {
+					dataArray.addAll(l);
+					return l.size();
+				} else {
+					return -1;
+				}
+			} catch (RemoteException e) {
+				return -1;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			DictionaryFragmentListAdapter.this.notifyDataSetChanged();
+			if (resultListener != null) {
+				resultListener.onLoadResultEnd(result.intValue(), dataArray.size());
+			}
+			super.onPostExecute(result);
+		}	
+		
+	}	
+
 	private static final String Tag = DictionaryFragmentListAdapter.class.getName();
 	
 	public static interface OnRefreshResultListener {
@@ -51,7 +79,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 
 	@Override
 	public long getItemId(int position) {
-		return dataArray.get(position).getId();
+		return dataArray.get(position).getIndex();
 	}
 
 	@Override
@@ -60,7 +88,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 			view = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, viewGroup, false);
 		}
 		TextView tv = (TextView) view.findViewById(android.R.id.text1);
-		tv.setText(dataArray.get(position).getWord());
+		tv.setText(dataArray.get(position).getText());
 
 		return view;
 	}
@@ -75,34 +103,6 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	
 	public void refresh() {
 		new LoadDataTask().execute();
-	}
-
-	private class LoadDataTask extends AsyncTask<Void, Void, Integer> {
-
-		@Override
-		protected Integer doInBackground(Void... params) {
-			try {
-				List<Word.Info> l = access.queryWordInfo(condition, dataArray.size(), maxItem);
-				if (l != null) {
-					dataArray.addAll(l);
-					return l.size();
-				} else {
-					return -1;
-				}
-			} catch (RemoteException e) {
-				return -1;
-			}
-		}
-
-		@Override
-		protected void onPostExecute(Integer result) {
-			DictionaryFragmentListAdapter.this.notifyDataSetChanged();
-			if (resultListener != null) {
-				resultListener.onLoadResultEnd(result.intValue(), dataArray.size());
-			}
-			super.onPostExecute(result);
-		}	
-		
 	}
 
 }

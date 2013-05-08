@@ -5,7 +5,7 @@ import java.util.List;
 
 import android.database.Cursor;
 import android.os.RemoteException;
-import jie.android.lac.data.Dictionary.SimpleInfo;
+import jie.android.lac.data.Dictionary;
 import jie.android.lac.data.Word;
 import jie.android.lac.service.aidl.Access;;
 
@@ -42,12 +42,12 @@ public class ServiceStub extends Access.Stub {
 	}
 
 	@Override
-	public String queryWordResult(int index) throws RemoteException {
-		return null;
+	public final Word.XmlResult queryWordXmlResult(int index) throws RemoteException {
+		return service.getDictionary().getWordXmlResult(index);
 	}
 
 	@Override
-	public List<SimpleInfo> getDictionarySimpleInfo() throws RemoteException {
+	public List<Dictionary.SimpleInfo> queryDictionarySimpleInfo() throws RemoteException {
 		return service.getDictionary().getSimpleInfo();
 	}
 	
@@ -58,7 +58,7 @@ public class ServiceStub extends Access.Stub {
 	}
 
 	@Override
-	public void enableDictionary(int index, boolean enable)
+	public void setEnableDictionary(int index, boolean enable)
 			throws RemoteException {
 		// TODO Auto-generated method stub
 		

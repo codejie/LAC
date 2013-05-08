@@ -7,10 +7,10 @@ import jie.android.lac.data.Dictionary;
 interface Access {
 	int checkState();
 	List<Word.Info> queryWordInfo(in String condition, in int offset, in int limit);
-	String queryWordResult(in int index);
+	Word.XmlResult queryWordXmlResult(in int index);
 //	List<Dictionary.Info> queryDictionaryInfo();
-	List<Dictionary.SimpleInfo> getDictionarySimpleInfo();
+	List<Dictionary.SimpleInfo> queryDictionarySimpleInfo();
 	void setDictionaryOrder(in int index, in int order);
-	void enableDictionary(in int index, in boolean enable);
+	void setEnableDictionary(in int index, in boolean enable);
 	
 }
