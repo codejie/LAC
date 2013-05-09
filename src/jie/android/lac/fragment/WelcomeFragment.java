@@ -44,19 +44,4 @@ public class WelcomeFragment extends BaseFragment {
 //		
 //		activity.updateFrame(Frame.Dictionary);// .Wizard);// .Dictionary);// .Setting);
 	}
-	
-	private void initData(int flag) {
-
-		String target = this.getLACActivity().getDatabasePath("lac").getParent();// .getAbsolutePath();// .getd .getFilesDir().getAbsolutePath();//  Environment.getDataDirectory().getAbsolutePath();
-		
-		try {
-			InputStream input = this.getLACActivity().getAssets().open("lac2.zip");// this.getAssets().open("lac2.zip");
-			AssetsHelper.UnzipTo(input, target);			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}	
-
 }

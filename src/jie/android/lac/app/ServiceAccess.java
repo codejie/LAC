@@ -54,6 +54,8 @@ public class ServiceAccess {
 
 	protected void onConnected() {
 		
+		callbackStub = new CallbackStub(activity.getHandler());
+		
 		try {
 			access.registerCallback(0xF1, callbackStub);
 		} catch (RemoteException e1) {
@@ -62,15 +64,6 @@ public class ServiceAccess {
 		}
 		
 		activity.onServiceConnected();
-		
-		try {
-			int value = access.checkState();
-			Log.d(Tag, "state - " + value);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 	}
 
 	public void bindService() {

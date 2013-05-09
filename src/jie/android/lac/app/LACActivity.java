@@ -10,8 +10,11 @@ import com.slidingmenu.lib.app.SlidingFragmentActivity;
 
 import jie.android.lac.R;
 import jie.android.lac.app.FragmentSwitcher.FragmentType;
+import jie.android.lac.data.Constants.MSG;
 import jie.android.lac.service.aidl.Access;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -27,7 +30,23 @@ public class LACActivity extends SlidingFragmentActivity {
 	
 	private FragmentSwitcher fragmentSwitcher = null;
 	
-	private SearchView searchView = null;
+//	private SearchView searchView = null;
+	
+	private Handler handler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			onMessage(msg);
+//			switch (msg.what) {
+//			case MSG.WORD_XMLRESULT:
+//				break;
+//			default:;
+//			}
+			
+			//super.handleMessage(msg);			
+		}
+		
+	};
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -172,12 +191,16 @@ public class LACActivity extends SlidingFragmentActivity {
 		fragmentSwitcher.show(type);
 	}
 	
-	public Configuration getConfig() { 
+	public final Configuration getConfig() { 
 		return configuration;
 	}
 	
-	public Access getServiceAccess() {
+	public final Access getServiceAccess() {
 		return serviceAccess.getAccess();
+	}
+	
+	public final Handler getHandler() {
+		return handler;
 	}
 
 	@Override
@@ -198,11 +221,17 @@ public class LACActivity extends SlidingFragmentActivity {
 	}
 
 	public void onServiceConnected() {
-		showFragment(FragmentType.Dictionary);
+//		showFragment(FragmentType.Dictionary);
 	}
 		
 	public void onServiceDisconnected() {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	protected void onMessage(Message msg) {
+		showFragment(FragmentType.Dictionary);		
+	}
+
+	
 }

@@ -11,15 +11,17 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
 
 public class LACService extends Service {
 
 	private static final String Tag = LACService.class.getSimpleName();
 
-	private ServiceStub binder = null;
+	private ServiceStub serviceStub = null;
 	
 	private SharedPreferences prefs = null;
 	private String dataPath = null;
@@ -28,12 +30,38 @@ public class LACService extends Service {
 	private Dictionary dictionary = null;
 	
 	private Callback appCallback = null;
+
+	private AsyncTask<Void, Void, Void> initDataTask = new AsyncTask<Void, Void, Void>() {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			initDBAccess();
+			initDictionary();
+			
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			
+			if (appCallback != null) {
+				try {
+					appCallback.onServiceStartup(0);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			super.onPostExecute(result);
+		}
+		
+	};
 	
 	@Override
 	public IBinder onBind(Intent intent) {
-		binder = new ServiceStub(this);
+		serviceStub = new ServiceStub(this);
 		// TODO Auto-generated method stub
-		return binder;
+		return serviceStub;
 	}
 
 	public final DBAccess getDBAccess() {
@@ -60,9 +88,11 @@ public class LACService extends Service {
 		Log.d(Tag, "service create : " + prefs.getInt(Configuration.PREFS_DATA_LOCATION, 0));
 	
 		dataPath = this.getDatabasePath(DBAccess.FILE).getParent() + File.separator;
+
+		initDataTask.execute();
 		
-		initDBAccess();
-		initDictionary();
+//		initDBAccess();
+//		initDictionary();
 	}
 
 	@Override
@@ -110,7 +140,7 @@ public class LACService extends Service {
 			InputStream input;
 			try {
 				input = this.getAssets().open("lac2.zip");
-				AssetsHelper.UnzipTo(input, target.getAbsolutePath());			
+				AssetsHelper.UnzipTo(input, target.getAbsolutePath(), null);			
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

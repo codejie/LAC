@@ -13,7 +13,12 @@ import android.util.Log;
 
 public class AssetsHelper {
 
-	public static int UnzipTo(final InputStream input, final String outputPath) {
+	public interface OnUnzipListener {
+		public void onComplete();
+//		public void onFail();
+	}
+	
+	public static int UnzipTo(final InputStream input, final String outputPath, OnUnzipListener listener) {
 		
 		File file = new File(outputPath);
 		if(!file.exists()) {
@@ -47,6 +52,10 @@ public class AssetsHelper {
 			
 		} catch (IOException e) {
 			return -1;
+		}
+		
+		if (listener != null) {
+			listener.onComplete();
 		}
 				
 		return 0;
