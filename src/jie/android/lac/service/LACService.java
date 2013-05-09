@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import jie.android.lac.app.Configuration;
 import jie.android.lac.data.Dictionary;
+import jie.android.lac.service.aidl.Callback;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +17,7 @@ import android.util.Log;
 
 public class LACService extends Service {
 
-	private static final String Tag = LACService.class.getName();
+	private static final String Tag = LACService.class.getSimpleName();
 
 	private ServiceStub binder = null;
 	
@@ -25,6 +26,8 @@ public class LACService extends Service {
 	
 	private DBAccess dbAccess = null;
 	private Dictionary dictionary = null;
+	
+	private Callback appCallback = null;
 	
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -39,6 +42,14 @@ public class LACService extends Service {
 	
 	public final Dictionary getDictionary() {
 		return dictionary;
+	}
+	
+	public final Callback getAppCallback() {
+		return appCallback;
+	}
+	
+	public void setAppCallback(int id, Callback callback) {
+		appCallback = callback;
 	}
 	
 	@Override
@@ -107,7 +118,8 @@ public class LACService extends Service {
 		}
 		
 		return target.getAbsolutePath();
-	}	
+	}
+	
 	
 
 }

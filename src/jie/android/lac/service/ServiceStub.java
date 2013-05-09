@@ -7,7 +7,8 @@ import android.database.Cursor;
 import android.os.RemoteException;
 import jie.android.lac.data.Dictionary;
 import jie.android.lac.data.Word;
-import jie.android.lac.service.aidl.Access;;
+import jie.android.lac.service.aidl.Access;
+import jie.android.lac.service.aidl.Callback;
 
 public class ServiceStub extends Access.Stub {
 	
@@ -62,6 +63,16 @@ public class ServiceStub extends Access.Stub {
 			throws RemoteException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void registerCallback(int id, Callback callback)	throws RemoteException {
+		service.setAppCallback(id, callback);
+	}
+
+	@Override
+	public void unregisterCallback(int id) throws RemoteException {
+		service.setAppCallback(id, null);
 	}
 
 

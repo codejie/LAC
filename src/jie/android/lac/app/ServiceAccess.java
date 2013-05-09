@@ -1,6 +1,7 @@
 package jie.android.lac.app;
 
 import jie.android.lac.service.aidl.Access;
+import jie.android.lac.service.aidl.Callback;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -28,9 +29,11 @@ public class ServiceAccess {
 			onDisconnected();			
 		}		
 	};
+		
+	private CallbackStub callbackStub = null;
 	
 	public ServiceAccess(LACActivity lacActivity) {
-		activity = lacActivity;
+		activity = lacActivity;		
 	}
 
 	public final ServiceConnection getServiceConnection() {
@@ -38,10 +41,26 @@ public class ServiceAccess {
 	}
 
 	protected void onDisconnected() {
+		
+		try {
+			access.unregisterCallback(0xF1);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		activity.onServiceDisconnected();
 	}
 
 	protected void onConnected() {
+		
+		try {
+			access.registerCallback(0xF1, callbackStub);
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		activity.onServiceConnected();
 		
 		try {
