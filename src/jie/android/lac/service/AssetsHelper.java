@@ -18,6 +18,8 @@ public class AssetsHelper {
 //		public void onFail();
 	}
 	
+	private static final String Tag = AssetsHelper.class.getSimpleName();
+	
 	public static int UnzipTo(final InputStream input, final String outputPath, OnUnzipListener listener) {
 		
 		File file = new File(outputPath);
@@ -33,7 +35,7 @@ public class AssetsHelper {
 			ZipEntry zipEntry = null;
 			while((zipEntry = zipStream.getNextEntry())!= null) {
 				file = new File(outputPath + File.separator + zipEntry.getName());
-				Log.d("DDofLAC", "ZIP FILE = " + zipEntry.getName());				
+				Log.d(Tag, "ZIP FILE = " + zipEntry.getName());				
 				if(!zipEntry.isDirectory()) {
 					if(!file.createNewFile())
 						return -1;

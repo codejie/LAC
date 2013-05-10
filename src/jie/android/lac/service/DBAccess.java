@@ -15,7 +15,7 @@ public class DBAccess {
 		public static final String[] WordIndex = new String[] { "offset", "length", "block1" };
 	}
 	
-	private static final String Tag = DBAccess.class.getName();
+	private static final String Tag = DBAccess.class.getSimpleName();
 	
 	public static String FILE	=	"lac2.db";
 	private static int VERSION	=	1;

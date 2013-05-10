@@ -11,7 +11,9 @@ import com.slidingmenu.lib.app.SlidingFragmentActivity;
 import jie.android.lac.R;
 import jie.android.lac.app.FragmentSwitcher.FragmentType;
 import jie.android.lac.data.Constants.MSG;
+import jie.android.lac.data.Constants.SERVICE_STATE;
 import jie.android.lac.service.aidl.Access;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,22 +32,21 @@ public class LACActivity extends SlidingFragmentActivity {
 	
 	private FragmentSwitcher fragmentSwitcher = null;
 	
-//	private SearchView searchView = null;
+	private ProgressDialog dlg = null;
 	
 	private Handler handler = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
-			onMessage(msg);
-//			switch (msg.what) {
-//			case MSG.WORD_XMLRESULT:
-//				break;
-//			default:;
-//			}
-			
-			//super.handleMessage(msg);			
-		}
-		
+			switch (msg.what) {
+			case MSG.SERVICE_STATE_NOTIFY:
+				onServiceState(msg);
+				break;
+			case MSG.WORD_XML_RESULT:
+				break;
+			default:;
+			}
+		}		
 	};
 	
 	@Override
@@ -81,10 +82,11 @@ public class LACActivity extends SlidingFragmentActivity {
 	}
 
 	private void initService() {
+		showProcessDialog(true);		
 		serviceAccess = new ServiceAccess(this);
 		serviceAccess.bindService();
 	}
-	
+
 	private void releaseService() {
 		serviceAccess.unbindService();
 	}
@@ -221,17 +223,58 @@ public class LACActivity extends SlidingFragmentActivity {
 	}
 
 	public void onServiceConnected() {
-//		showFragment(FragmentType.Dictionary);
+		updateProgressMessage(R.string.lac_service_sate_connecting);
 	}
 		
 	public void onServiceDisconnected() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	protected void onMessage(Message msg) {
-		showFragment(FragmentType.Dictionary);		
+		showProcessDialog(true);
+		updateProgressMessage(R.string.lac_service_state_disconnected);
+		showProcessDialog(false);
 	}
 
+	protected void onServiceState(Message msg) {
+		switch(msg.arg1) {
+		case SERVICE_STATE.DATA_INIT:
+			updateProgressMessage(R.string.lac_service_state_init_data);
+			break;			
+		case SERVICE_STATE.DATA_READY:
+			updateProgressMessage(R.string.lac_service_state_ready);
+			showProcessDialog(false);
+			break;
+		case SERVICE_STATE.DICTIONARY_INIT:
+			updateProgressMessage(R.string.lac_service_state_init_dict);
+			break;
+		case SERVICE_STATE.DATA_UNZIP:
+			updateProgressMessage(R.string.lac_service_state_unzip_data);
+			break;
+		case SERVICE_STATE.DATA_LOAD_FAIL:
+			updateProgressMessage(R.string.lac_service_state_fail);
+			showProcessDialog(false);			
+			break;			
+		default:;
+		}		
+	}
 	
+	
+	protected void onServiceReady(Message msg) {
+		showFragment(FragmentType.Dictionary);
+	}
+	
+	private void showProcessDialog(boolean show) {
+		if (dlg == null) {
+			dlg = new ProgressDialog(this);
+		}
+		if (show) {
+			dlg.show();
+		} else {
+			dlg.dismiss();
+			dlg = null;
+		}
+	}
+	
+	private void updateProgressMessage(int resId) {
+		if (dlg != null) {
+			dlg.setMessage(this.getString(resId));
+		}
+	}	
 }

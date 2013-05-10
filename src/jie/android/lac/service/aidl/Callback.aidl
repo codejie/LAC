@@ -2,5 +2,5 @@
 package jie.android.lac.service.aidl;
 
 interface Callback {
-	void onServiceStartup(in int result);
+	void onServiceState(in int state);
 }

@@ -11,5 +11,12 @@
     <string name="lac_wizard_start">Go !</string>
     <string name="lac_wizard_location_local">Local  Directory</string>
     <string name="lac_wizard_location_sdcard">Extern Storage (SD Card)</string>
+    <string name="lac_service_sate_connecting">Service connecting...</string>
+    <string name="lac_service_state_ready">Service connected.</string>
+    <string name="lac_service_state_disconnected">Service disconnected.</string>
+    <string name="lac_service_state_init_data">Service initing data...</string>
+    <string name="lac_service_state_unzip_data">Service unzipping data...</string>
+    <string name="lac_service_state_fail">Service connect failed.</string>
+    <string name="lac_service_state_init_dict">Service initing dictionaries...</string>
 
 </resources>

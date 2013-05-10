@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import jie.android.lac.app.Configuration;
+import jie.android.lac.data.Constants.SERVICE_STATE;
 import jie.android.lac.data.Dictionary;
 import jie.android.lac.service.aidl.Callback;
 import android.app.Service;
@@ -31,28 +32,33 @@ public class LACService extends Service {
 	
 	private Callback appCallback = null;
 
-	private AsyncTask<Void, Void, Void> initDataTask = new AsyncTask<Void, Void, Void>() {
+	private AsyncTask<Void, Void, Integer> initDataTask = new AsyncTask<Void, Void, Integer>() {
 
 		@Override
-		protected Void doInBackground(Void... params) {
-			initDBAccess();
-			initDictionary();
-			
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void result) {
-			
-			if (appCallback != null) {
-				try {
-					appCallback.onServiceStartup(0);
-				} catch (RemoteException e) {
-					e.printStackTrace();
+		protected Integer doInBackground(Void... params) {			
+			postServiceStateNotify(SERVICE_STATE.DATA_INIT);
+			if (!checkData()) {
+				postServiceStateNotify(SERVICE_STATE.DATA_UNZIP);
+				if (!unzipData()) {
+					return -1;
 				}
 			}
 			
-			super.onPostExecute(result);
+			initDBAccess();
+			postServiceStateNotify(SERVICE_STATE.DICTIONARY_INIT);
+			if (!initDictionary()) {
+				return -1;
+			}
+		
+			return 0;
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+			
+			postServiceStateNotify(result == 0 ? SERVICE_STATE.DATA_READY : SERVICE_STATE.DATA_LOAD_FAIL);
+//			
+//			super.onPostExecute(result);
 		}
 		
 	};
@@ -103,11 +109,7 @@ public class LACService extends Service {
 	}
 
 	private void initDBAccess() {
-		int dataFlag = prefs.getInt(Configuration.PREFS_DATA_LOCATION, 0);
-		
-		String dbfile = initData(dataFlag);
-		
-		dbAccess = new DBAccess(this, dbfile);
+		dbAccess = new DBAccess(this, dataPath + DBAccess.FILE);
 	}
 
 	private void releaseDBAccess() {
@@ -116,9 +118,9 @@ public class LACService extends Service {
 		}
 	}
 	
-	private void initDictionary() {
+	private boolean initDictionary() {		
 		dictionary = new Dictionary(dbAccess, dataPath);
-		dictionary.load();
+		return dictionary.load();
 	}
 	
 	private void releaseDictionary() {
@@ -126,30 +128,65 @@ public class LACService extends Service {
 			dictionary.close();
 		}
 	}
-	
-	private final String initData(int flag) {
 
-		File target = this.getDatabasePath(DBAccess.FILE);
-		if (!target.exists()) {
-			target = target.getParentFile();
-	
-			if (!target.exists()) {
-				target.mkdir();
-			}
-			
-			InputStream input;
-			try {
-				input = this.getAssets().open("lac2.zip");
-				AssetsHelper.UnzipTo(input, target.getAbsolutePath(), null);			
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		return target.getAbsolutePath();
+	private boolean checkData() {
+		return getDatabasePath(DBAccess.FILE).exists();
 	}
 	
+	private boolean unzipData() {
+		
+		File target = this.getDatabasePath(DBAccess.FILE).getParentFile();		
+
+		if (!target.exists()) {
+			target.mkdir();
+		}
+		
+		InputStream input;
+		try {
+			input = this.getAssets().open("lac2.zip");
+			AssetsHelper.UnzipTo(input, target.getAbsolutePath(), null);			
+		} catch (IOException e) {
+			e.printStackTrace();			
+			return false;
+		}
+		
+		return true;
+	}
 	
+//	private final String initData(int flag) {
+//
+//		File target = this.getDatabasePath(DBAccess.FILE);
+//		if (!target.exists()) {
+//			
+//			postServiceStateNotify(SERVICE_STATE.DATA_UNZIP);
+//			
+//			File parent = target.getParentFile();
+//	
+//			if (!parent.exists()) {
+//				parent.mkdir();
+//			}
+//			
+//			InputStream input;
+//			try {
+//				input = this.getAssets().open("lac2.zip");
+//				AssetsHelper.UnzipTo(input, parent.getAbsolutePath(), null);			
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		return target.getAbsolutePath();
+//	}
+
+	private void postServiceStateNotify(int state) {
+		if (appCallback != null) {
+			try {
+				appCallback.onServiceState(state);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}		
+	}
 
 }
