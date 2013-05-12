@@ -35,6 +35,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
@@ -275,10 +276,6 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	
 	private void showWordResult(int position, long id) {
 		
-//		InputMethodManager imm = (InputMethodManager)getLACActivity().getSystemService(
-//			      Context.INPUT_METHOD_SERVICE);
-//		imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
-		
 		searchView.setIconified(true);
 		
 		LoadWordXmlResultTask task = new LoadWordXmlResultTask();
@@ -337,8 +334,9 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	}
 	
 	private void initSearchView(Menu menu) {
-		if (searchView == null && viewState == ViewState.WORD_LIST) {
+		if (viewState == ViewState.WORD_LIST) {
 			searchView = (SearchView) menu.findItem(R.id.item1).getActionView();
+			searchView.setIconifiedByDefault(true);
 			searchView.setIconified(false);
 		}
 	}
@@ -359,7 +357,6 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		}
 		return super.onKeyDown(keyCode, event);
 	}
-
 	
 }
 

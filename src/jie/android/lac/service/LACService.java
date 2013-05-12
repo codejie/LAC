@@ -67,7 +67,7 @@ public class LACService extends Service {
 	};
 	
 	@Override
-	public IBinder onBind(Intent intent) {
+	public IBinder onBind(Intent intent) {				
 		serviceStub = new ServiceStub(this);
 		return serviceStub;
 	}
@@ -86,7 +86,10 @@ public class LACService extends Service {
 	
 	public void setAppCallback(int id, Callback callback) {
 		appCallback = callback;
-		if (isReady && appCallback != null) {
+		
+		if (!isReady) {
+			initDataTask.execute();
+		} else if (isReady && appCallback != null) {
 			postServiceStateNotify(SERVICE_STATE.DATA_READY);
 		}
 	}
@@ -100,10 +103,7 @@ public class LACService extends Service {
 	
 		dataPath = this.getDatabasePath(DBAccess.FILE).getParent() + File.separator;
 
-		initDataTask.execute();
-		
-//		initDBAccess();
-//		initDictionary();
+//		initDataTask.execute();
 	}
 
 	@Override
