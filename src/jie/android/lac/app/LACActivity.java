@@ -40,6 +40,7 @@ public class LACActivity extends SlidingFragmentActivity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG.SERVICE_STATE_NOTIFY:
+				Log.d(Tag, "get Service State notify - state : " + msg.arg1);
 				onServiceState(msg);
 				break;
 			case MSG.WORD_XML_RESULT:
@@ -54,10 +55,10 @@ public class LACActivity extends SlidingFragmentActivity {
 		super.onCreate(savedInstanceState);
 		
 		initGlobalData();
+				
+		initView();
 		
 		initService();
-		
-		initView();
 	}
 
 	@Override
@@ -240,6 +241,7 @@ public class LACActivity extends SlidingFragmentActivity {
 		case SERVICE_STATE.DATA_READY:
 			updateProgressMessage(R.string.lac_service_state_ready);
 			showProcessDialog(false);
+			onServiceReady();
 			break;
 		case SERVICE_STATE.DICTIONARY_INIT:
 			updateProgressMessage(R.string.lac_service_state_init_dict);
@@ -249,16 +251,21 @@ public class LACActivity extends SlidingFragmentActivity {
 			break;
 		case SERVICE_STATE.DATA_LOAD_FAIL:
 			updateProgressMessage(R.string.lac_service_state_fail);
-			showProcessDialog(false);			
+			showProcessDialog(false);
+			onServiceFailed();
 			break;			
 		default:;
 		}		
 	}
 	
-	
-	protected void onServiceReady(Message msg) {
+	protected void onServiceReady() {
 		showFragment(FragmentType.Dictionary);
 	}
+	
+	private void onServiceFailed() {
+		// TODO Auto-generated method stub
+		
+	}	
 	
 	private void showProcessDialog(boolean show) {
 		if (dlg == null) {

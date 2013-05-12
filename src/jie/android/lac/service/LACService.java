@@ -31,6 +31,8 @@ public class LACService extends Service {
 	private Dictionary dictionary = null;
 	
 	private Callback appCallback = null;
+	
+	private boolean isReady = false;
 
 	private AsyncTask<Void, Void, Integer> initDataTask = new AsyncTask<Void, Void, Integer>() {
 
@@ -57,6 +59,7 @@ public class LACService extends Service {
 		protected void onPostExecute(Integer result) {
 			
 			postServiceStateNotify(result == 0 ? SERVICE_STATE.DATA_READY : SERVICE_STATE.DATA_LOAD_FAIL);
+			isReady = (result == 0);
 //			
 //			super.onPostExecute(result);
 		}
@@ -66,7 +69,6 @@ public class LACService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		serviceStub = new ServiceStub(this);
-		// TODO Auto-generated method stub
 		return serviceStub;
 	}
 
@@ -84,6 +86,9 @@ public class LACService extends Service {
 	
 	public void setAppCallback(int id, Callback callback) {
 		appCallback = callback;
+		if (isReady && appCallback != null) {
+			postServiceStateNotify(SERVICE_STATE.DATA_READY);
+		}
 	}
 	
 	@Override
@@ -182,6 +187,7 @@ public class LACService extends Service {
 	private void postServiceStateNotify(int state) {
 		if (appCallback != null) {
 			try {
+				Log.d(Tag, "postServiceStateNotify() - state : " + state);
 				appCallback.onServiceState(state);
 			} catch (RemoteException e) {
 				e.printStackTrace();
