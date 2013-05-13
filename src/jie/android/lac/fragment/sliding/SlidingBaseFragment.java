@@ -7,10 +7,6 @@ public class SlidingBaseFragment extends Fragment {
 
 	protected BaseFragment attachFragment = null;
 	
-	public SlidingBaseFragment() {
-		super();
-	}
-	
 	public SlidingBaseFragment(final BaseFragment fragment) {
 		super();
 		this.attachFragment = fragment;

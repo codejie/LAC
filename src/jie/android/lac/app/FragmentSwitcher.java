@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.view.KeyEvent;
 
+import com.actionbarsherlock.view.MenuItem;
 import com.slidingmenu.lib.SlidingMenu;
 
 public class FragmentSwitcher {
@@ -129,8 +130,22 @@ public class FragmentSwitcher {
 		
 		return fragment.onKeyDown(keyCode, event);
 	}
+
+//	public boolean onOptionsItemSelected(MenuItem item) {
+//		if (current == null) {
+//			return false;
+//		}
+//		
+//		BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(current.getName());
+//		if (fragment == null) {
+//			return false;
+//		}
+//		
+//		return fragment.onOptionsItemSelected(item);
+//	}
 	
 	public FragmentType getCurrentFragmentType() {
 		return current;
 	}
+
 }

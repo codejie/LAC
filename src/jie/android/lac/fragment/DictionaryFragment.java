@@ -9,6 +9,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
+import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
@@ -74,7 +75,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 			}			
 			super.onPostExecute(result);
 		}
-	}
+	}	
 	
 	private enum ViewState {
 		WORD_LIST, WORD_RESULT;
@@ -98,7 +99,31 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	
 	private TranslateAnimation aniResultIn = null;
 	private TranslateAnimation aniWord = null;
-	private TranslateAnimation aniResultOut = null;		
+	private TranslateAnimation aniResultOut = null;
+	
+	private boolean isQueryCheckThreadRun = false;
+	private final Object queryLock = new Object();
+
+	private Thread inputCheckThread = new Thread(new Runnable() {
+
+		@Override
+		public void run() {
+			while (isQueryCheckThreadRun()) {
+				synchronized(queryLock) {
+					try {
+						queryLock.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				final String query = searchView.getQuery().toString();
+				if (query == null || query.isEmpty()) {
+					continue;
+				}
+				loadWordList(query);
+			}
+		}		
+	});
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -109,8 +134,17 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		setOptionsMenu(R.menu.dictionary_word_list);
 		
 		initData();
+		
+		startQueryCheckThread();
 	}	
 
+
+	@Override
+	public void onDestroy() {
+		releaseQueryCheckThread();
+		super.onDestroy();
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,	Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_dictionary_switcher, container, false);
@@ -232,7 +266,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	}
 
 	protected void OnClick() {
-		adapter.load("z");
+		loadWordList("z");
 	}
 
 	@Override
@@ -255,7 +289,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		if (intent != null) {
 			String condition = intent.getStringExtra("keyword");
 			if (condition != null) {
-				adapter.load(condition);
+				loadWordList(condition);
 			}
 		}
 		super.onIntent(intent);
@@ -275,7 +309,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	}
 	
 	private void showWordResult(int position, long id) {
-		
+			
 		searchView.setIconified(true);
 		
 		LoadWordXmlResultTask task = new LoadWordXmlResultTask();
@@ -330,34 +364,108 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	public void onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 		
-		initSearchView(menu);
+		if (viewState == ViewState.WORD_LIST) {
+			initListMenu(menu);
+		} else {
+			initResultMenu(menu);
+		}
 	}
 	
-	private void initSearchView(Menu menu) {
-		if (viewState == ViewState.WORD_LIST) {
-			searchView = (SearchView) menu.findItem(R.id.item1).getActionView();
-			searchView.setIconifiedByDefault(true);
-			searchView.setIconified(false);
+	private void initListMenu(Menu menu) {
+		searchView = (SearchView) menu.findItem(R.id.list_search).getActionView();
+		searchView.setQueryHint("Keyword");
+		searchView.setIconifiedByDefault(true);
+		searchView.setIconified(false);
+		
+		searchView.setOnQueryTextListener(new OnQueryTextListener() {
+
+			@Override
+			public boolean onQueryTextSubmit(String query) {
+				synchronized(queryLock) {
+					queryLock.notify();
+				}
+				return true;
+			}
+
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				synchronized(queryLock) {
+					queryLock.notify();
+				}
+				return true;
+			}
+			
+		});
+	}
+	
+	private synchronized boolean isQueryCheckThreadRun() {
+		return isQueryCheckThreadRun;
+	}
+	
+	private synchronized void setQueryCheckThreadRun(boolean value) {
+		isQueryCheckThreadRun = value;
+	}
+	
+	private void startQueryCheckThread() {
+		setQueryCheckThreadRun(true);
+		inputCheckThread.start();
+	}
+
+	private void releaseQueryCheckThread() {
+		try {
+			setQueryCheckThreadRun(false);
+			synchronized(queryLock) {
+				queryLock.notify();
+			}
+			inputCheckThread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
-		return super.onOptionsItemSelected(item);
+	private void initResultMenu(Menu menu) {
+		
 	}
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (viewState == ViewState.WORD_RESULT) {
-			
-			showWordList();
-			
-			return true;
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			if (viewState == ViewState.WORD_RESULT) {				
+				showWordList();				
+				return true;
+			}
 		}
 		return super.onKeyDown(keyCode, event);
 	}
-	
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch(item.getItemId()) {
+		case R.id.list_search:
+			onListSearchClick();
+			break;
+		case R.id.result_search:
+			onResultSearchClick();
+			break;
+		}
+		
+		return super.onOptionsItemSelected(item);
+	}
+
+	private void onListSearchClick() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void onResultSearchClick() {
+		showWordList();		
+	}
+	 
+	private void loadWordList(final String query) {
+		adapter.load(query);
+	}
 }
 
 

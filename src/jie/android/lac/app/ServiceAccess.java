@@ -19,6 +19,7 @@ public class ServiceAccess {
 	private ServiceConnection connection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder binder) {
+			Log.d(Tag, "Service connected.");
 			access = Access.Stub.asInterface(binder);			
 			onConnected();
 		}
@@ -42,6 +43,8 @@ public class ServiceAccess {
 
 	protected void onDisconnected() {
 		
+		Log.d(Tag, "unregister callback.");
+		
 		try {
 			access.unregisterCallback(0xF1);
 		} catch (RemoteException e) {
@@ -53,6 +56,7 @@ public class ServiceAccess {
 	}
 
 	protected void onConnected() {
+		Log.d(Tag, "register callback.");
 		
 		callbackStub = new CallbackStub(activity.getHandler());
 		
@@ -68,12 +72,14 @@ public class ServiceAccess {
 
 	public void bindService() {
 		
+		Log.d(Tag, "Bind Service.");
 		Intent intent = new Intent("lacService");
 		activity.bindService(intent, connection, Context.BIND_AUTO_CREATE);
 		
 	}
 
 	public void unbindService() {
+		Log.d(Tag, "Unbind Service.");
 		activity.unbindService(connection);
 	}
 	

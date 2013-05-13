@@ -67,10 +67,21 @@ public class LACService extends Service {
 	};
 	
 	@Override
-	public IBinder onBind(Intent intent) {				
+	public IBinder onBind(Intent intent) {
+		
+		Log.d(Tag, "onBind()");
+		
 		serviceStub = new ServiceStub(this);
 		return serviceStub;
 	}
+	
+
+	@Override
+	public boolean onUnbind(Intent intent) {
+		Log.d(Tag, "onUnbind()");
+		return super.onUnbind(intent);
+	}
+	
 
 	public final DBAccess getDBAccess() {
 		return dbAccess;
@@ -85,6 +96,7 @@ public class LACService extends Service {
 	}
 	
 	public void setAppCallback(int id, Callback callback) {
+		Log.d(Tag, "set app callback : " + id);
 		appCallback = callback;
 		
 		if (!isReady) {
@@ -108,6 +120,7 @@ public class LACService extends Service {
 
 	@Override
 	public void onDestroy() {
+		Log.d(Tag, "onDestroy()");
 		releaseDictionary();
 		releaseDBAccess();
 		super.onDestroy();

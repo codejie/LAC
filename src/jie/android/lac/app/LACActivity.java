@@ -54,16 +54,33 @@ public class LACActivity extends SlidingFragmentActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		initGlobalData();
-				
+		initGlobalData();				
 		initView();
 		
-		initService();
+		Log.d(Tag, "onCreate().");
+	}
+
+	@Override
+	protected void onStart() {
+		
+		Log.d(Tag, "onStart().");		
+		super.onStart();
+		
+		initService();		
+	}	
+
+	@Override
+	protected void onStop() {
+		Log.d(Tag, "onStop().");
+		releaseService();		
+		super.onStop();
 	}
 
 	@Override
 	protected void onDestroy() {
-		releaseService();
+		
+		Log.d(Tag, "onDestroy().");		
+//		releaseService();
 
 		super.onDestroy();
 	}
@@ -109,85 +126,6 @@ public class LACActivity extends SlidingFragmentActivity {
 		sm.setSecondaryShadowDrawable(R.drawable.shadow);
 		
 		sm.setSlidingEnabled(false);
-				
-//		replaceSlidingFragment(R.id.lac_left, new ColorFragment(R.color.green));
-//		replaceSlidingFragment(R.id.lac_right, new ColorFragment(R.color.white));
-	}
-
-//	private void replaceSlidingFragment(int id, Fragment fragment) {
-//		this.getSupportFragmentManager().beginTransaction().replace(id, fragment).commit();		
-//	}
-//
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		
-//		this.getSupportMenuInflater().inflate(R.menu.lac, menu);
-//
-//		searchView = (SearchView) menu.findItem(R.id.item4).getActionView();
-//		searchView.setQueryHint("Keyword");
-//		searchView.setIconifiedByDefault(true);
-//		
-//		searchView.setOnSearchClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				Log.d(Tag, "setOnSearchClickListener");
-////				onSearchViewChange(true);
-//			}
-//			
-//		});
-//		
-//		searchView.setOnCloseListener(new OnCloseListener() {
-//
-//			@Override
-//			public boolean onClose() {
-//				Log.d(Tag, "setOnCloseListener");
-////				onSearchViewChange(false);
-//				return false;
-//			}
-//			
-//		});
-//		
-//		searchView.setOnQueryTextListener(new OnQueryTextListener() {
-//
-//			@Override
-//			public boolean onQueryTextSubmit(String query) {
-//				Log.d(Tag, "search key submit : " + query);
-////				onSearchViewQueryChanged(query, true);
-//				return true;
-//			}
-//
-//			@Override
-//			public boolean onQueryTextChange(String newText) {
-//				Log.d(Tag, "search key change : " + newText);
-////				onSearchViewQueryChanged(newText, false);
-//				return true;
-//			}
-//			
-//		});		
-//
-//		return super.onCreateOptionsMenu(menu);
-//	}
-
-//	protected void onSearchViewQueryChanged(String query, boolean isSubmitted) {
-//		Intent intent = new Intent();
-//		intent.putExtra("keyword", query);
-//		intent.putExtra("submit", isSubmitted);
-//	
-//		contentSwitcher.postIntent(Frame.Dictionary, intent);
-//	}
-//
-//	protected void onSearchViewChange(boolean isOpen) {
-//		contentSwitcher.update(Frame.Dictionary);
-//
-//	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		
-		Log.d(Tag, "MenuItem : " + item.getItemId());
-		
-//		searchView.setIconified(false);
-		return super.onOptionsItemSelected(item);
 	}
 
 	public void showFragment(FragmentType type) {
@@ -211,15 +149,7 @@ public class LACActivity extends SlidingFragmentActivity {
 		if (fragmentSwitcher.onKeyDown(keyCode, event)) {
 			return true;
 		}
-//		if (keyCode == KeyEvent.KEYCODE_SEARCH) {
-//			searchView.setIconified(false);
-//			return true;
-//		} else if(keyCode == KeyEvent.KEYCODE_BACK) {
-//			if (!searchView.isIconified()) {
-//				searchView.setIconified(true);
-//				return true;
-//			}
-//		}
+
 		return super.onKeyDown(keyCode, event);
 	}
 
@@ -283,5 +213,5 @@ public class LACActivity extends SlidingFragmentActivity {
 		if (dlg != null) {
 			dlg.setMessage(this.getString(resId));
 		}
-	}	
+	}
 }

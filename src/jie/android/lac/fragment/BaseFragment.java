@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.slidingmenu.lib.SlidingMenu;
 
 public abstract class BaseFragment extends SherlockFragment {
@@ -77,6 +78,10 @@ public abstract class BaseFragment extends SherlockFragment {
 			getLACActivity().supportInvalidateOptionsMenu();
 		}
 	}
+	
+//	public boolean onOptionsItemSelected(MenuItem item) {
+//		return false;
+//	}
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		return false;
