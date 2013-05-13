@@ -57,11 +57,8 @@ public class LACService extends Service {
 
 		@Override
 		protected void onPostExecute(Integer result) {
-			
 			postServiceStateNotify(result == 0 ? SERVICE_STATE.DATA_READY : SERVICE_STATE.DATA_LOAD_FAIL);
 			isReady = (result == 0);
-//			
-//			super.onPostExecute(result);
 		}
 		
 	};
@@ -170,32 +167,6 @@ public class LACService extends Service {
 		
 		return true;
 	}
-	
-//	private final String initData(int flag) {
-//
-//		File target = this.getDatabasePath(DBAccess.FILE);
-//		if (!target.exists()) {
-//			
-//			postServiceStateNotify(SERVICE_STATE.DATA_UNZIP);
-//			
-//			File parent = target.getParentFile();
-//	
-//			if (!parent.exists()) {
-//				parent.mkdir();
-//			}
-//			
-//			InputStream input;
-//			try {
-//				input = this.getAssets().open("lac2.zip");
-//				AssetsHelper.UnzipTo(input, parent.getAbsolutePath(), null);			
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		
-//		return target.getAbsolutePath();
-//	}
 
 	private void postServiceStateNotify(int state) {
 		if (appCallback != null) {

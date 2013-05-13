@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
@@ -18,13 +17,11 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import jie.android.lac.R;
 import jie.android.lac.data.Dictionary;
 import jie.android.lac.data.Word;
-import jie.android.lac.data.Word.Info;
 import jie.android.lac.fragment.data.DictionaryFragmentListAdapter;
 import jie.android.lac.fragment.data.XmlTranslator;
 import jie.android.lac.fragment.data.DictionaryFragmentListAdapter.OnRefreshResultListener;
 import jie.android.lac.fragment.sliding.DictionaryListSlidingFragment;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -35,17 +32,15 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.animation.TranslateAnimation;
-import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
@@ -73,7 +68,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 				webTextView.setText(info.getText());
 				webView.loadDataWithBaseURL(null, result, "text/html", "utf-8", null);			
 			}			
-			super.onPostExecute(result);
+//			super.onPostExecute(result);
 		}
 	}	
 	
@@ -101,6 +96,12 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	private TranslateAnimation aniWord = null;
 	private TranslateAnimation aniResultOut = null;
 	
+	private LinearLayout emptyLayout = null;
+	private TextView emptyTextView = null;
+
+	private LinearLayout footLayout = null;
+	private TextView footTextView = null;	
+	
 	private boolean isQueryCheckThreadRun = false;
 	private final Object queryLock = new Object();
 
@@ -120,7 +121,8 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 				if (query == null || query.isEmpty()) {
 					continue;
 				}
-				loadWordList(query);
+				adapter.load(query);
+//				loadWordList(query);
 			}
 		}		
 	});
@@ -155,16 +157,6 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		initListView(viewSwitcher);
 		initWebView(viewSwitcher);
 
-		Button btn = (Button) viewSwitcher.findViewById(R.id.button1);
-		btn.setOnClickListener(new OnClickListener() {
- 
-			@Override
-			public void onClick(View arg0) {
-				OnClick();
-			}
-			
-		});		
-		
 		return v;
 	}
 
@@ -205,6 +197,16 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		//adapter
 		adapter = new DictionaryFragmentListAdapter(getLACActivity(), getLACActivity().getServiceAccess(), this);		
 		pullList.setAdapter(adapter);
+		
+		getLACActivity();
+		View v = ((LayoutInflater)getLACActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.fragment_dictionary_list_tip, (ViewGroup) pullList, true);
+		emptyLayout = (LinearLayout) v.findViewById(R.id.emptyLayout);
+		emptyTextView = (TextView) v.findViewById(R.id.textView1);
+		pullList.setEmptyView(emptyLayout);
+		
+		footLayout = (LinearLayout) v.findViewById(R.id.footLayout);
+		footTextView = (TextView) v.findViewById(R.id.textView2);
+		pullList.getRefreshableView().addFooterView(footLayout);		
 	}
 
 	private void initWebView(View parent) {
@@ -266,7 +268,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	}
 
 	protected void OnClick() {
-		loadWordList("z");
+
 	}
 
 	@Override
@@ -282,17 +284,12 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	@Override
 	public void onLoadResultEnd(int count, int total) {
 		pullList.onRefreshComplete();
-	}
-
-	@Override
-	public void onIntent(Intent intent) {
-		if (intent != null) {
-			String condition = intent.getStringExtra("keyword");
-			if (condition != null) {
-				loadWordList(condition);
-			}
+		if (total == 0) {
+			pullList.setMode(Mode.DISABLED);
+		} else if (count == 0) {
+			pullList.setMode(Mode.DISABLED);
+			showListFootTip(true);
 		}
-		super.onIntent(intent);
 	}
 
 	private void showWordList() {
@@ -389,6 +386,11 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 
 			@Override
 			public boolean onQueryTextChange(String newText) {
+				if (pullList.getMode() == Mode.DISABLED) {
+					pullList.setMode(Mode.PULL_FROM_END);
+					showListFootTip(false);
+				}
+
 				synchronized(queryLock) {
 					queryLock.notify();
 				}
@@ -462,9 +464,13 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	private void onResultSearchClick() {
 		showWordList();		
 	}
-	 
-	private void loadWordList(final String query) {
-		adapter.load(query);
+	
+	private void showListFootTip(boolean show) {
+		if (show) {
+			footLayout.setVisibility(View.VISIBLE);
+		} else {
+			footLayout.setVisibility(View.GONE);
+		}
 	}
 }
 
