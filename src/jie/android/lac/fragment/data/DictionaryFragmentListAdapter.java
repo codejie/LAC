@@ -39,7 +39,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 		protected void onPostExecute(Integer result) {
 			DictionaryFragmentListAdapter.this.notifyDataSetChanged();
 			if (resultListener != null) {
-				resultListener.onLoadResultEnd(result.intValue(), dataArray.size());
+				resultListener.onLoadResultEnd(result.intValue(), dataArray.size(), maxItem);
 			}
 			super.onPostExecute(result);
 		}	
@@ -49,7 +49,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	private static final String Tag = DictionaryFragmentListAdapter.class.getName();
 	
 	public static interface OnRefreshResultListener {
-		public void onLoadResultEnd(int count,int total);
+		public void onLoadResultEnd(int count,int total, int maxPerPage);
 	}
 	
 	private Context context = null;

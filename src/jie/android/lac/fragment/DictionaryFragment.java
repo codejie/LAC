@@ -198,15 +198,17 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		adapter = new DictionaryFragmentListAdapter(getLACActivity(), getLACActivity().getServiceAccess(), this);		
 		pullList.setAdapter(adapter);
 		
-		getLACActivity();
-		View v = ((LayoutInflater)getLACActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.fragment_dictionary_list_tip, (ViewGroup) pullList, true);
-		emptyLayout = (LinearLayout) v.findViewById(R.id.emptyLayout);
-		emptyTextView = (TextView) v.findViewById(R.id.textView1);
-		pullList.setEmptyView(emptyLayout);
+//		View v = getLACActivity().getLayoutInflater().inflate(R.layout.fragment_dictionary_list_foot, null);
+//		emptyLayout = (LinearLayout) parent.findViewById(R.id.footLayout);
+//		emptyTextView = (TextView) parent.findViewById(R.id.textView1);
+//		pullList.setEmptyView(emptyLayout);
+//		emptyTextView.setText("EMPTY");
 		
-		footLayout = (LinearLayout) v.findViewById(R.id.footLayout);
-		footTextView = (TextView) v.findViewById(R.id.textView2);
-		pullList.getRefreshableView().addFooterView(footLayout);		
+		View v1 = getLACActivity().getLayoutInflater().inflate(R.layout.fragment_dictionary_list_foot, null);
+		footLayout = (LinearLayout) v1.findViewById(R.id.footLayout);
+		footTextView = (TextView) v1.findViewById(R.id.textView1);
+		pullList.getRefreshableView().addFooterView(v1);	
+		pullList.getRefreshableView().setFooterDividersEnabled(false);
 	}
 
 	private void initWebView(View parent) {
@@ -273,7 +275,9 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		showWordResult(position, id);
+		if (id != -1) {
+			showWordResult(position, id);
+		}
 	}
 
 	@Override
@@ -282,13 +286,16 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	}	
 
 	@Override
-	public void onLoadResultEnd(int count, int total) {
+	public void onLoadResultEnd(int count, int total, int maxPerPage) {
 		pullList.onRefreshComplete();
 		if (total == 0) {
 			pullList.setMode(Mode.DISABLED);
-		} else if (count == 0) {
+			showListFootTip(true, R.string.lac_list_empty);
+		} else if (count == 0 || total < maxPerPage) {
 			pullList.setMode(Mode.DISABLED);
-			showListFootTip(true);
+			showListFootTip(true, R.string.lac_list_lastword);
+		} else {
+			showListFootTip(false, -1);
 		}
 	}
 
@@ -306,7 +313,10 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	}
 	
 	private void showWordResult(int position, long id) {
-			
+		if (position == adapter.getCount()) {
+			return;
+		}
+		
 		searchView.setIconified(true);
 		
 		LoadWordXmlResultTask task = new LoadWordXmlResultTask();
@@ -388,7 +398,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 			public boolean onQueryTextChange(String newText) {
 				if (pullList.getMode() == Mode.DISABLED) {
 					pullList.setMode(Mode.PULL_FROM_END);
-					showListFootTip(false);
+					showListFootTip(false, -1);
 				}
 
 				synchronized(queryLock) {
@@ -465,9 +475,12 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		showWordList();		
 	}
 	
-	private void showListFootTip(boolean show) {
+	private void showListFootTip(boolean show, int resId) {
 		if (show) {
 			footLayout.setVisibility(View.VISIBLE);
+			if (resId != -1) {
+				footTextView.setText(resId);
+			}
 		} else {
 			footLayout.setVisibility(View.GONE);
 		}

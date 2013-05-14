@@ -4,28 +4,30 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <com.handmark.pulltorefresh.library.PullToRefreshListView
-        android:id="@+id/pull_refresh_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </com.handmark.pulltorefresh.library.PullToRefreshListView>
-
     <LinearLayout
         android:id="@+id/footLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:longClickable="false"
         android:orientation="vertical" >
 
         <TextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|fill_horizontal"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
-            android:gravity="center_horizontal|fill_horizontal"
-            android:text="Medium Text"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:longClickable="false"
+            android:text="@string/lac_list_inputquery"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </LinearLayout>
-    
+
 </LinearLayout>
