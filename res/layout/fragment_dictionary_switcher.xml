@@ -11,20 +11,10 @@
         <com.handmark.pulltorefresh.library.PullToRefreshListView
             android:id="@+id/pull_refresh_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/button1"
+            android:layout_height="match_parent"
             android:layout_alignParentTop="true" >
 
         </com.handmark.pulltorefresh.library.PullToRefreshListView>
-
-        <Button
-            android:id="@+id/button1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:text="Button" />
 
     </RelativeLayout>
     
@@ -33,24 +23,24 @@
         android:layout_height="match_parent" >
 
  	   <TextView
-	        android:id="@+id/textView1"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentLeft="true"
-	        android:layout_alignParentRight="true"
-	        android:layout_alignParentTop="true"
-	        android:paddingLeft="5dp"
-	        android:paddingTop="5dp"
-	        android:text="TextView"
-	        android:textSize="30sp"
-	        android:textStyle="bold" />
+ 	       android:id="@+id/textWord"
+ 	       android:layout_width="match_parent"
+ 	       android:layout_height="wrap_content"
+ 	       android:layout_alignParentLeft="true"
+ 	       android:layout_alignParentRight="true"
+ 	       android:layout_alignParentTop="true"
+ 	       android:paddingLeft="5dp"
+ 	       android:paddingTop="5dp"
+ 	       android:text="textWord"
+ 	       android:textSize="30sp"
+ 	       android:textStyle="bold" />
 
     	<WebView
 	        android:id="@+id/webView1"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
 	        android:layout_alignParentLeft="true"
-	        android:layout_below="@+id/textView1" />
+	        android:layout_below="@+id/textWord" />
 
     </RelativeLayout>    
     

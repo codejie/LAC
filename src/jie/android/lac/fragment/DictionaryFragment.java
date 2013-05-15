@@ -68,7 +68,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 				webTextView.setText(info.getText());
 				webView.loadDataWithBaseURL(null, result, "text/html", "utf-8", null);			
 			}			
-//			super.onPostExecute(result);
+			super.onPostExecute(result);
 		}
 	}	
 	
@@ -96,8 +96,8 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	private TranslateAnimation aniWord = null;
 	private TranslateAnimation aniResultOut = null;
 	
-	private LinearLayout emptyLayout = null;
-	private TextView emptyTextView = null;
+//	private LinearLayout emptyLayout = null;
+//	private TextView emptyTextView = null;
 
 	private LinearLayout footLayout = null;
 	private TextView footTextView = null;	
@@ -109,7 +109,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 
 		@Override
 		public void run() {
-			while (isQueryCheckThreadRun()) {
+			while (true) {
 				synchronized(queryLock) {
 					try {
 						queryLock.wait();
@@ -117,6 +117,11 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 						e.printStackTrace();
 					}
 				}
+				
+				if (!isQueryCheckThreadRun()) {
+					break;
+				}
+				
 				final String query = searchView.getQuery().toString();
 				if (query == null || query.isEmpty()) {
 					continue;
@@ -206,14 +211,14 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		
 		View v1 = getLACActivity().getLayoutInflater().inflate(R.layout.fragment_dictionary_list_foot, null);
 		footLayout = (LinearLayout) v1.findViewById(R.id.footLayout);
-		footTextView = (TextView) v1.findViewById(R.id.textView1);
+		footTextView = (TextView) v1.findViewById(R.id.textWord);
 		pullList.getRefreshableView().addFooterView(v1);	
 		pullList.getRefreshableView().setFooterDividersEnabled(false);
 	}
 
 	private void initWebView(View parent) {
 		
-		webTextView = (TextView) parent.findViewById(R.id.textView1);
+		webTextView = (TextView) parent.findViewById(R.id.textWord);
 		
 		gestureDetector = new GestureDetector(this.getLACActivity(), new GestureDetector.SimpleOnGestureListener() {
 			@Override
@@ -313,14 +318,14 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	}
 	
 	private void showWordResult(int position, long id) {
-		if (position == adapter.getCount()) {
-			return;
-		}
-		
+
 		searchView.setIconified(true);
 		
+		Word.Info info = (Word.Info) adapter.getItem(position - 1);
+//		webTextView.setText(info.getText());
+
 		LoadWordXmlResultTask task = new LoadWordXmlResultTask();
-		task.execute((Word.Info) adapter.getItem(position - 1));
+		task.execute(info);
 
 		viewSwitcher.clearAnimation();
 		viewSwitcher.setInAnimation(aniResultIn);

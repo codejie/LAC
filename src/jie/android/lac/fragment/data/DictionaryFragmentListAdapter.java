@@ -22,6 +22,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 
 		@Override
 		protected Integer doInBackground(Void... params) {
+			isloading = true;
 			try {
 				List<Word.Info> l = access.queryWordInfo(condition, dataArray.size(), maxItem);
 				if (l != null) {
@@ -41,9 +42,10 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 			if (resultListener != null) {
 				resultListener.onLoadResultEnd(result.intValue(), dataArray.size(), maxItem);
 			}
+			
 			super.onPostExecute(result);
-		}	
-		
+			isloading = false;			
+		}
 	}	
 
 	private static final String Tag = DictionaryFragmentListAdapter.class.getName();
@@ -60,6 +62,8 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	
 	private int maxItem = 15;
 	private String condition = null;
+	
+	private Boolean isloading = false;
 	
 	public DictionaryFragmentListAdapter(Context context, Access access, OnRefreshResultListener resultListener) {
 		this.context = context;
@@ -102,7 +106,11 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	}
 	
 	public void refresh() {
-		new LoadDataTask().execute();
+		synchronized(isloading) {
+			if (!isloading) {
+				new LoadDataTask().execute();
+			}
+		}
 	}
 
 }

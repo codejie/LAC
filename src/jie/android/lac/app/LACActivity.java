@@ -100,9 +100,11 @@ public class LACActivity extends SlidingFragmentActivity {
 	}
 
 	private void initService() {
-		showProcessDialog(true);		
-		serviceAccess = new ServiceAccess(this);
-		serviceAccess.bindService();
+		if (serviceAccess == null) {
+			showProcessDialog(true);		
+			serviceAccess = new ServiceAccess(this);
+			serviceAccess.bindService();
+		}
 	}
 
 	private void releaseService() {
