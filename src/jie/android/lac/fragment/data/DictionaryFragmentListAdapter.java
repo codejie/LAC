@@ -113,4 +113,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 		}
 	}
 
+	public void setMaxPrePage(int value) {
+		maxItem = value;
+	}
 }

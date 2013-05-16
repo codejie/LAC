@@ -200,7 +200,8 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		pullList.setOnItemClickListener(this);
 		
 		//adapter
-		adapter = new DictionaryFragmentListAdapter(getLACActivity(), getLACActivity().getServiceAccess(), this);		
+		adapter = new DictionaryFragmentListAdapter(getLACActivity(), getLACActivity().getServiceAccess(), this);
+		adapter.setMaxPrePage(getLACActivity().getConfig().getWordPrePage());
 		pullList.setAdapter(adapter);
 		
 //		View v = getLACActivity().getLayoutInflater().inflate(R.layout.fragment_dictionary_list_foot, null);
@@ -211,7 +212,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		
 		View v1 = getLACActivity().getLayoutInflater().inflate(R.layout.fragment_dictionary_list_foot, null);
 		footLayout = (LinearLayout) v1.findViewById(R.id.footLayout);
-		footTextView = (TextView) v1.findViewById(R.id.textWord);
+		footTextView = (TextView) v1.findViewById(R.id.textFoot);
 		pullList.getRefreshableView().addFooterView(v1);	
 		pullList.getRefreshableView().setFooterDividersEnabled(false);
 	}
@@ -321,11 +322,11 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 
 		searchView.setIconified(true);
 		
-		Word.Info info = (Word.Info) adapter.getItem(position - 1);
+//		Word.Info info = (Word.Info) adapter.getItem(position - 1);
 //		webTextView.setText(info.getText());
 
 		LoadWordXmlResultTask task = new LoadWordXmlResultTask();
-		task.execute(info);
+		task.execute((Word.Info) adapter.getItem(position - 1));
 
 		viewSwitcher.clearAnimation();
 		viewSwitcher.setInAnimation(aniResultIn);

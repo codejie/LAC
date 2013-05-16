@@ -86,7 +86,9 @@ public class LACActivity extends SlidingFragmentActivity {
 	}
 
 	private void initGlobalData() {
-		configuration = new Configuration(this);		
+		configuration = new Configuration(this);
+
+		configuration.setWordPrePage(15);
 	}
 
 	private void initView() {

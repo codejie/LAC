@@ -4,7 +4,7 @@
     android:layout_height="fill_parent" >
 
     <TextView
-        android:id="@+id/textWord"
+        android:id="@+id/textFoot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -17,7 +17,7 @@
         android:id="@+id/radioGroup1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textWord"
+        android:layout_below="@+id/textFoot"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp" >
 

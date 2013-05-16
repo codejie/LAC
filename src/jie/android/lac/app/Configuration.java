@@ -13,6 +13,8 @@ public final class Configuration {
 	public static final String PREFS_DATA_LOCATION			=	"data_location";//0:not init; 1: card; 2: local
 //	private static final String PREFS_DATA_FOLDER			=	"data_folder";
 	
+	public static final String PREFS_WORD_PRE_PAGE			=	"word_per_page";
+	
 	private SharedPreferences prefs = null;
 	
 	public Configuration(Context context) {
@@ -49,6 +51,14 @@ public final class Configuration {
 	
 	public void setDataLocation(int value) {
 		prefs.edit().putInt(PREFS_DATA_LOCATION, value);
+	}
+
+	public int getWordPrePage() {
+		return prefs.getInt(PREFS_WORD_PRE_PAGE, 15);
+	}
+	
+	public void setWordPrePage(int value) {
+		prefs.edit().putInt(PREFS_WORD_PRE_PAGE, value);
 	}
 	
 //	public final String getDataFolder() {
