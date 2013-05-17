@@ -3,6 +3,7 @@ package jie.android.lac.app;
 import jie.android.lac.R;
 import jie.android.lac.fragment.BaseFragment;
 import jie.android.lac.fragment.DictionaryFragment;
+import jie.android.lac.fragment.TestFragment;
 import jie.android.lac.fragment.WelcomeFragment;
 
 import android.content.Intent;
@@ -17,7 +18,7 @@ public class FragmentSwitcher {
 	public enum FragmentType {
 
 		Welcome("welcome", true), Dictionary("dictionary", false), 
-		Memory("memory", false), Wizard("wizard", true);
+		Memory("memory", false), Wizard("wizard", true), Test("test", true);
 		
 		private final String name;
 		private final boolean removed;//remove if hided
@@ -54,6 +55,9 @@ public class FragmentSwitcher {
 			break;
 		case Dictionary:
 			fragment = new DictionaryFragment();
+			break;
+		case Test:
+			fragment = new TestFragment();
 			break;
 		default:
 			return null;

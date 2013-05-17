@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 
 
 public class LACActivity extends SlidingFragmentActivity {
@@ -193,12 +194,12 @@ public class LACActivity extends SlidingFragmentActivity {
 	}
 	
 	protected void onServiceReady() {
-		showFragment(FragmentType.Dictionary);
+		//showFragment(FragmentType.Dictionary);
+		showFragment(FragmentType.Test);
 	}
 	
 	private void onServiceFailed() {
-		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, this.getString(R.string.lac_service_state_fail), Toast.LENGTH_LONG).show();
 	}	
 	
 	private void showProcessDialog(boolean show) {
