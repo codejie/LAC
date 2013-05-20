@@ -21,5 +21,9 @@
     <string name="lac_list_empty">Not match any results.</string>
     <string name="lac_list_lastword">No more results.</string>
     <string name="lac_list_inputquery">Type your keyword..</string>
+    <string name="lac_dictionarygroup_internal">Internal</string>
+    <string name="lac_dictionarygroup_bundled">Bundled</string>
+    <string name="lac_dictionarygroup_external">External</string>
+    <string name="lac_dictionarygroup_online">Online</string>
 
 </resources>
