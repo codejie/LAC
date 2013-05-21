@@ -7,9 +7,12 @@ import jie.android.lac.R;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListAdapter;
+import android.widget.TextView;
 
 public class SlidingDictionaryTitleListAdapter implements ExpandableListAdapter {
 
@@ -25,8 +28,22 @@ public class SlidingDictionaryTitleListAdapter implements ExpandableListAdapter 
 		}
 	}
 	
-	private ArrayList<String> groupData = null;
-	private HashMap<Integer, ArrayList<ItemData>> data = null;
+	private class GroupData {
+		public int index = -1;
+		public String title = null;
+		public ArrayList<ItemData> item = new ArrayList<ItemData>();
+		
+		public GroupData(int index, final String title) {
+			this.index = index;
+			this.title = title;
+		}
+		
+		public void addItem(int id, final String title) {
+			item.add(new ItemData(id, title));
+		}
+	}
+	
+	private ArrayList<GroupData> data = null;
 	
 	private final Context context;
 	
@@ -37,118 +54,114 @@ public class SlidingDictionaryTitleListAdapter implements ExpandableListAdapter 
 	}
 	
 	private void initData() {
-		groupData = new ArrayList<String>();
-		data = new HashMap<Integer, ArrayList<ItemData>>();
+		data = new ArrayList<GroupData>();
 		
-		groupData.add(0, context.getString(R.string.lac_dictionarygroup_internal));
-		groupData.add(1, context.getString(R.string.lac_dictionarygroup_bundled));
-		groupData.add(2, context.getString(R.string.lac_dictionarygroup_external));
-		groupData.add(3, context.getString(R.string.lac_dictionarygroup_online));
+		data.add(0, new GroupData(0, context.getString(R.string.lac_dictionarygroup_internal)));
+		data.add(1, new GroupData(1, context.getString(R.string.lac_dictionarygroup_bundled)));
+		data.add(2, new GroupData(2, context.getString(R.string.lac_dictionarygroup_external)));
+		data.add(3, new GroupData(3, context.getString(R.string.lac_dictionarygroup_online)));
 		
-		data.put(0, new ArrayList<ItemData>());
-		data.get(0).add(new ItemData(0, "memory"));
-		data.get(0).add(new ItemData(1, "default"));
+		data.get(0).addItem(0, "memory");
+		data.get(0).addItem(1, "default");
 		
-		data.put(1, new ArrayList<ItemData>());
-		data.get(1).add(new ItemData(11, "Vicon EC"));
-		data.get(1).add(new ItemData(12, "Vicon CE"));
+		data.get(1).addItem(11, "Vicon EC");
+		data.get(1).addItem(12, "Vicon CE");
 		
-		data.put(3, new ArrayList<ItemData>());
-		data.get(3).add(new ItemData(21, "GOOGLE"));
+		data.get(3).addItem(11, "GOOGLE");
 	}
 	
 	public void addItem(int group, int id, final String title) {
-		if (data.get(group) == null) {
-			data.put(group, new ArrayList<ItemData>());
+		if (data.get(group) != null) {
+			data.get(group).addItem(id, title);
 		}
-		data.get(group).add(new ItemData(id, title));
 	}
 
 	@Override
 	public boolean areAllItemsEnabled() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public Object getChild(int groupPosition, int childPosition) {
-		return data.get(groupData).get(childPosition);
+		return data.get(groupPosition).item.get(childPosition);
 	}
 
 	@Override
 	public long getChildId(int groupPosition, int childPosition) {
-		ItemData item = data.get(groupData).get(childPosition);
-		if (item != null) {
-			return item.id;
-		}
-		return -1;
+		return (data.get(groupPosition).item.get(childPosition).id);
 	}
 
 	@Override
-	public View getChildView(int groupPosition, int childPosition,
-			boolean isLastChild, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-		return null;
+	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+		
+		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View v = inflater.inflate(R.layout.sliding_dictionary_title_list_item, null);
+		
+		Log.d("==", "groupPos:" + groupPosition + " childPos:" + childPosition);
+		
+		TextView tv = (TextView) v.findViewById(R.id.textView1);
+		tv.setText(data.get(groupPosition).item.get(childPosition).title);
+		
+		return v;
 	}
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
-		// TODO Auto-generated method stub
-		return 0;
+		return data.get(groupPosition).item.size();
 	}
 
 	@Override
 	public long getCombinedChildId(long groupId, long childId) {
-		// TODO Auto-generated method stub
-		return 0;
+		long id = (groupId << 16) | childId;
+		Log.d("==", "id=" + id + " groupId:" + groupId + " childId:" + childId);
+		return id;
 	}
 
 	@Override
 	public long getCombinedGroupId(long groupId) {
-		// TODO Auto-generated method stub
-		return 0;
+		return groupId;
 	}
 
 	@Override
 	public Object getGroup(int groupPosition) {
-		// TODO Auto-generated method stub
-		return null;
+		return data.get(groupPosition);
 	}
 
 	@Override
-	public int getGroupCount() {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getGroupCount() {		
+		return data.size();
 	}
 
 	@Override
 	public long getGroupId(int groupPosition) {
-		// TODO Auto-generated method stub
-		return 0;
+		return data.get(groupPosition).index;
 	}
 
 	@Override
-	public View getGroupView(int groupPosition, boolean isExpanded,
-			View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-		return null;
+	public View getGroupView(int groupPosition, boolean isExpanded,	View convertView, ViewGroup parent) {
+		
+		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View v = inflater.inflate(R.layout.sliding_dictionary_title_list_group, null);
+		
+		TextView tv = (TextView) v.findViewById(R.id.textView1);
+		tv.setText(data.get(groupPosition).title);
+		
+		return v;
 	}
 
 	@Override
 	public boolean hasStableIds() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isChildSelectable(int groupPosition, int childPosition) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return data.size() == 0;
 	}
 
 	@Override

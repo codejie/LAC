@@ -1,6 +1,7 @@
 package jie.android.lac.fragment;
 
 import jie.android.lac.R;
+import jie.android.lac.fragment.data.SlidingDictionaryTitleListAdapter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +24,7 @@ public class TestFragment extends BaseFragment {
 	private void initListView(View v) {
 		list = (ExpandableListView) v.findViewById(R.id.expandableListView1);
 		
-		list.setad
+		list.setAdapter(new SlidingDictionaryTitleListAdapter(this.getLACActivity()));
 	}
 
 }
