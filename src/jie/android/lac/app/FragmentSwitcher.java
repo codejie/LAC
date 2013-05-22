@@ -152,4 +152,22 @@ public class FragmentSwitcher {
 		return current;
 	}
 
+	public void onSlidingMenuClose() {
+		if (current != null) {
+			BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(current.getName());
+			if (fragment != null) {
+				fragment.onSlidingMenuClose();
+			}			
+		}
+	}
+
+	public void onSlidingMenuOpen() {
+		if (current != null) {
+			BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(current.getName());
+			if (fragment != null) {
+				fragment.onSlidingMenuOpen();
+			}			
+		}
+	}
+
 }

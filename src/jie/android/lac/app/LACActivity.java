@@ -1,10 +1,5 @@
 package jie.android.lac.app;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.SearchView;
-import com.actionbarsherlock.widget.SearchView.OnCloseListener;
-import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
 
@@ -19,8 +14,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 
@@ -130,6 +123,23 @@ public class LACActivity extends SlidingFragmentActivity {
 		sm.setSecondaryMenu(R.layout.lac_right);
 		sm.setSecondaryShadowDrawable(R.drawable.shadow);
 		
+		sm.setOnOpenListener(new SlidingMenu.OnOpenListener() {
+
+			@Override
+			public void onOpen() {
+				onSlidingMenuOpen();
+			}
+		
+		});
+		
+		sm.setOnCloseListener(new SlidingMenu.OnCloseListener() {
+			
+			@Override
+			public void onClose() {
+				onSldingMenuClose();
+			}
+		});
+		
 		sm.setSlidingEnabled(false);
 	}
 
@@ -157,6 +167,15 @@ public class LACActivity extends SlidingFragmentActivity {
 
 		return super.onKeyDown(keyCode, event);
 	}
+	
+
+	protected void onSldingMenuClose() {
+		fragmentSwitcher.onSlidingMenuClose();
+	}
+
+	protected void onSlidingMenuOpen() {
+		fragmentSwitcher.onSlidingMenuOpen();
+	}	
 
 	public void onServiceConnected() {
 		updateProgressMessage(R.string.lac_service_sate_connecting);
@@ -194,8 +213,8 @@ public class LACActivity extends SlidingFragmentActivity {
 	}
 	
 	protected void onServiceReady() {
-		//showFragment(FragmentType.Dictionary);
-		showFragment(FragmentType.Test);
+		showFragment(FragmentType.Dictionary);
+		//showFragment(FragmentType.Test);
 	}
 	
 	private void onServiceFailed() {

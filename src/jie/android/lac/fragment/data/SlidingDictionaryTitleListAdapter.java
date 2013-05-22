@@ -11,10 +11,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.CheckBox;
 import android.widget.ExpandableListAdapter;
 import android.widget.TextView;
 
-public class SlidingDictionaryTitleListAdapter implements ExpandableListAdapter {
+public class SlidingDictionaryTitleListAdapter extends BaseExpandableListAdapter { //implements ExpandableListAdapter {
 
 	private class ItemData {
 		public boolean isChecked = false;
@@ -51,7 +53,7 @@ public class SlidingDictionaryTitleListAdapter implements ExpandableListAdapter 
 		this.context = context;
 		
 		initData();
-	}
+	}	
 	
 	private void initData() {
 		data = new ArrayList<GroupData>();
@@ -61,13 +63,8 @@ public class SlidingDictionaryTitleListAdapter implements ExpandableListAdapter 
 		data.add(2, new GroupData(2, context.getString(R.string.lac_dictionarygroup_external)));
 		data.add(3, new GroupData(3, context.getString(R.string.lac_dictionarygroup_online)));
 		
-		data.get(0).addItem(0, "memory");
-		data.get(0).addItem(1, "default");
-		
-		data.get(1).addItem(11, "Vicon EC");
-		data.get(1).addItem(12, "Vicon CE");
-		
-		data.get(3).addItem(11, "GOOGLE");
+		data.get(0).addItem(0, context.getString(R.string.lac_dictionary_internal_notebook));
+		data.get(0).addItem(1, context.getString(R.string.lac_dictionary_internal_lingoshook));
 	}
 	
 	public void addItem(int group, int id, final String title) {
@@ -75,12 +72,7 @@ public class SlidingDictionaryTitleListAdapter implements ExpandableListAdapter 
 			data.get(group).addItem(id, title);
 		}
 	}
-
-	@Override
-	public boolean areAllItemsEnabled() {
-		return true;
-	}
-
+	
 	@Override
 	public Object getChild(int groupPosition, int childPosition) {
 		return data.get(groupPosition).item.get(childPosition);
@@ -92,15 +84,18 @@ public class SlidingDictionaryTitleListAdapter implements ExpandableListAdapter 
 	}
 
 	@Override
-	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-		
+	public View getChildView(int groupPosition, int childPosition,	boolean isLastChild, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View v = inflater.inflate(R.layout.sliding_dictionary_title_list_item, null);
 		
 		Log.d("==", "groupPos:" + groupPosition + " childPos:" + childPosition);
 		
+		ItemData item = data.get(groupPosition).item.get(childPosition);
+		CheckBox cb = (CheckBox) v.findViewById(R.id.checkBox1);
+		cb.setChecked(item.isChecked);
+		
 		TextView tv = (TextView) v.findViewById(R.id.textView1);
-		tv.setText(data.get(groupPosition).item.get(childPosition).title);
+		tv.setText(item.title);
 		
 		return v;
 	}
@@ -111,24 +106,12 @@ public class SlidingDictionaryTitleListAdapter implements ExpandableListAdapter 
 	}
 
 	@Override
-	public long getCombinedChildId(long groupId, long childId) {
-		long id = (groupId << 16) | childId;
-		Log.d("==", "id=" + id + " groupId:" + groupId + " childId:" + childId);
-		return id;
-	}
-
-	@Override
-	public long getCombinedGroupId(long groupId) {
-		return groupId;
-	}
-
-	@Override
 	public Object getGroup(int groupPosition) {
 		return data.get(groupPosition);
 	}
 
 	@Override
-	public int getGroupCount() {		
+	public int getGroupCount() {
 		return data.size();
 	}
 
@@ -139,7 +122,6 @@ public class SlidingDictionaryTitleListAdapter implements ExpandableListAdapter 
 
 	@Override
 	public View getGroupView(int groupPosition, boolean isExpanded,	View convertView, ViewGroup parent) {
-		
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View v = inflater.inflate(R.layout.sliding_dictionary_title_list_group, null);
 		
@@ -151,41 +133,12 @@ public class SlidingDictionaryTitleListAdapter implements ExpandableListAdapter 
 
 	@Override
 	public boolean hasStableIds() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean isChildSelectable(int groupPosition, int childPosition) {
-		return true;
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return data.size() == 0;
-	}
-
-	@Override
-	public void onGroupCollapsed(int groupPosition) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onGroupExpanded(int groupPosition) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void registerDataSetObserver(DataSetObserver observer) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void unregisterDataSetObserver(DataSetObserver observer) {
-		// TODO Auto-generated method stub
-		
+		return false;
 	}
 
 }

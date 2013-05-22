@@ -25,5 +25,7 @@
     <string name="lac_dictionarygroup_bundled">Bundled</string>
     <string name="lac_dictionarygroup_external">External</string>
     <string name="lac_dictionarygroup_online">Online</string>
+    <string name="lac_dictionary_internal_notebook">Notebook</string>
+    <string name="lac_dictionary_internal_lingoshook">LingosHook</string>
 
 </resources>

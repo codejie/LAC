@@ -130,4 +130,10 @@ public abstract class BaseFragment extends SherlockFragment {
 		}
 	}
 
+	public void onSlidingMenuClose() {
+	}
+
+	public void onSlidingMenuOpen() {
+	}
+
 }

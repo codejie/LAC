@@ -491,6 +491,15 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 			footLayout.setVisibility(View.GONE);
 		}
 	}
+
+
+	@Override
+	public void onSlidingMenuOpen() {
+		if (!searchView.isIconified()) {
+			searchView.setIconified(true);
+		}
+		super.onSlidingMenuOpen();
+	}
 }
 
 
