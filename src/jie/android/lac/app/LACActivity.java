@@ -53,7 +53,7 @@ public class LACActivity extends SlidingFragmentActivity {
 		
 		Log.d(Tag, "onCreate().");
 	}
-
+	
 	@Override
 	protected void onStart() {
 		
@@ -64,17 +64,10 @@ public class LACActivity extends SlidingFragmentActivity {
 	}	
 
 	@Override
-	protected void onStop() {
-		Log.d(Tag, "onStop().");
-		releaseService();		
-		super.onStop();
-	}
-
-	@Override
 	protected void onDestroy() {
 		
 		Log.d(Tag, "onDestroy().");		
-//		releaseService();
+		releaseService();
 
 		super.onDestroy();
 	}
@@ -138,7 +131,7 @@ public class LACActivity extends SlidingFragmentActivity {
 			public void onClose() {
 				onSldingMenuClose();
 			}
-		});
+		});		
 		
 		sm.setSlidingEnabled(false);
 	}
@@ -238,4 +231,9 @@ public class LACActivity extends SlidingFragmentActivity {
 			dlg.setMessage(this.getString(resId));
 		}
 	}
+	
+	public boolean isSlidingMenuShowing() {
+		return this.getSlidingMenu().isMenuShowing(); 
+	}
+
 }

@@ -32,6 +32,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.animation.TranslateAnimation;
 import android.view.ViewGroup;
@@ -175,11 +176,11 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
         
 //        if(SCREEN_HEIGHT > SCREEN_WIDTH) {		
 			aniResultIn = new TranslateAnimation(SCREEN_WIDTH, 0, 0, 0);
-			aniResultIn.setDuration(300);
+			aniResultIn.setDuration(500);
 			aniWord = new TranslateAnimation(0, 0, 0, 0);
-			aniWord.setDuration(300);
+			aniWord.setDuration(500);
 			aniResultOut = new TranslateAnimation(0, SCREEN_WIDTH, 0, 0);
-			aniResultOut.setDuration(300);
+			aniResultOut.setDuration(500);
 //        }
 //        else {
 //        	aniResultIn = new TranslateAnimation(0, 0, SCREEN_HEIGHT, 0);
@@ -414,6 +415,15 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 			}
 			
 		});
+		
+		searchView.setOnSearchClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				onListSearchClick();
+			}
+			
+		});
 	}
 	
 	private synchronized boolean isQueryCheckThreadRun() {
@@ -452,7 +462,18 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 			if (viewState == ViewState.WORD_RESULT) {				
 				showWordList();				
 				return true;
+			} else if (!searchView.isIconified()) {
+				searchView.setIconified(true);
+				return true;
 			}
+		} else if (keyCode == KeyEvent.KEYCODE_SEARCH) {
+			if (viewState == ViewState.WORD_RESULT) {				
+				showWordList();				
+				return true;
+			} else if (searchView.isIconified()) {
+				searchView.setIconified(false);
+				return true;
+			}			
 		}
 		return super.onKeyDown(keyCode, event);
 	}
@@ -461,9 +482,6 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch(item.getItemId()) {
-		case R.id.list_search:
-			onListSearchClick();
-			break;
 		case R.id.result_search:
 			onResultSearchClick();
 			break;
@@ -473,8 +491,9 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	}
 
 	private void onListSearchClick() {
-		// TODO Auto-generated method stub
-		
+		if (getLACActivity().isSlidingMenuShowing()) {
+			getLACActivity().toggle();
+		}
 	}
 
 	private void onResultSearchClick() {
