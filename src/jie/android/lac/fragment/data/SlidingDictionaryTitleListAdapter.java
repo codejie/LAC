@@ -10,13 +10,21 @@ import android.database.DataSetObserver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class SlidingDictionaryTitleListAdapter extends BaseExpandableListAdapter { //implements ExpandableListAdapter {
+	
+	public interface OnChildCheckedChangeListener {
+		public void OnCheckedChange(ViewGroup parent, View view, int groupPosition, int childPosition, boolean checked);
+	}
 
 	private class ItemData {
 		public boolean isChecked = false;
@@ -48,6 +56,8 @@ public class SlidingDictionaryTitleListAdapter extends BaseExpandableListAdapter
 	private ArrayList<GroupData> data = null;
 	
 	private final Context context;
+	
+	public OnChildCheckedChangeListener onChildCheckChangedListener = null;
 	
 	public SlidingDictionaryTitleListAdapter(Context context) {
 		this.context = context;
@@ -84,18 +94,38 @@ public class SlidingDictionaryTitleListAdapter extends BaseExpandableListAdapter
 	}
 
 	@Override
-	public View getChildView(int groupPosition, int childPosition,	boolean isLastChild, View convertView, ViewGroup parent) {
+	public View getChildView(final int groupPosition, final int childPosition,	boolean isLastChild, View convertView, final ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View v = inflater.inflate(R.layout.sliding_dictionary_title_list_item, null);
+		final View v = inflater.inflate(R.layout.sliding_dictionary_title_list_item, null);
 		
 		Log.d("==", "groupPos:" + groupPosition + " childPos:" + childPosition);
 		
 		ItemData item = data.get(groupPosition).item.get(childPosition);
-		CheckBox cb = (CheckBox) v.findViewById(R.id.checkBox1);
+		final CheckBox cb = (CheckBox) v.findViewById(R.id.checkBox1);
 		cb.setChecked(item.isChecked);
+		cb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton view, boolean checked) {
+				if (onChildCheckChangedListener != null) {
+					onChildCheckChangedListener.OnCheckedChange(parent, v, groupPosition, childPosition, checked);
+				}
+			}
+			
+		});
 		
 		TextView tv = (TextView) v.findViewById(R.id.textView1);
 		tv.setText(item.title);
+		
+		LinearLayout layout = (LinearLayout) v.findViewById(R.id.linearLayout1);
+		layout.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				cb.setChecked(!cb.isChecked());
+			}
+			
+		});
 		
 		return v;
 	}
@@ -141,4 +171,8 @@ public class SlidingDictionaryTitleListAdapter extends BaseExpandableListAdapter
 		return false;
 	}
 
+	public void setOnChildCheckedChangeListener(OnChildCheckedChangeListener listener) {
+		onChildCheckChangedListener = listener;
+	}
+	
 }
