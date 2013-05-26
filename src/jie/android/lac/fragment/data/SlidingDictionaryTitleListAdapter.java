@@ -100,13 +100,14 @@ public class SlidingDictionaryTitleListAdapter extends BaseExpandableListAdapter
 		
 		Log.d("==", "groupPos:" + groupPosition + " childPos:" + childPosition);
 		
-		ItemData item = data.get(groupPosition).item.get(childPosition);
+		final ItemData item = data.get(groupPosition).item.get(childPosition);
 		final CheckBox cb = (CheckBox) v.findViewById(R.id.checkBox1);
 		cb.setChecked(item.isChecked);
 		cb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override
 			public void onCheckedChanged(CompoundButton view, boolean checked) {
+				item.isChecked = checked;
 				if (onChildCheckChangedListener != null) {
 					onChildCheckChangedListener.OnCheckedChange(parent, v, groupPosition, childPosition, checked);
 				}
