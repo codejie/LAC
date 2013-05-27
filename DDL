@@ -1,0 +1,1 @@
+CREATE TABLE dict_info ( idx INTEGER PRIMARY KEY, title TEXT, file TEXT, offset INTEGER, d_decoder INTGER, x_decoder INTEGER, source INTEGER, target INTEGER, state INTEGER, owner TEXT);
