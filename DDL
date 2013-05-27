@@ -1,0 +1,13 @@
+CREATE TABLE dict_info ( idx INTEGER PRIMARY KEY, title TEXT, file TEXT, offset INTEGER, d_decoder INTGER, x_decoder INTEGER, source INTEGER, target INTEGER, state INTEGER, owner TEXT);
+
+
+CREATE TABLE [word_extra_data] (
+  [word_idx] INTEGER, 
+  [text_data] TEXT, 
+  [int_data] INTEGER);
+
+
+CREATE TABLE [word_info] (
+  [idx] INTEGER PRIMARY KEY, 
+  [word] TEXT NOT NULL, 
+  [flag] INTEGER);
