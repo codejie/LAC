@@ -1,5 +1,6 @@
 package jie.android.lac.app;
 
+import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
@@ -207,7 +208,7 @@ public class LACActivity extends SlidingFragmentActivity {
 	}
 	
 	protected void onServiceReady() {
-		showFragment(FragmentType.Dictionary);
+		//showFragment(FragmentType.Dictionary);
 		//showFragment(FragmentType.Test);
 	}
 	
@@ -239,8 +240,22 @@ public class LACActivity extends SlidingFragmentActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_app_search:
+			if (fragmentSwitcher.getCurrentFragmentType() != FragmentType.Dictionary) {
+				fragmentSwitcher.show(FragmentType.Dictionary);
+			}
+			break;
+		}
+		
 		Toast.makeText(this, item.getTitle().toString(), Toast.LENGTH_SHORT).show();
-		return super.onOptionsItemSelected(item);
+		return false;//super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		getSupportMenuInflater().inflate(R.menu.lac, menu);
+		return super.onPrepareOptionsMenu(menu);
 	}
 
 }

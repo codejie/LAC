@@ -386,7 +386,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 	}
 	
 	private void initListMenu(Menu menu) {
-		searchView = (SearchView) menu.findItem(R.id.list_search).getActionView();
+		searchView = (SearchView) menu.findItem(R.id.menu_list_search).getActionView();
 		searchView.setQueryHint("Keyword");
 		searchView.setIconifiedByDefault(true);
 		searchView.setIconified(false);
