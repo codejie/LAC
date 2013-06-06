@@ -1,5 +1,6 @@
 package jie.android.lac.app;
 
+import com.actionbarsherlock.view.MenuItem;
 import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
 
@@ -234,6 +235,12 @@ public class LACActivity extends SlidingFragmentActivity {
 	
 	public boolean isSlidingMenuShowing() {
 		return this.getSlidingMenu().isMenuShowing(); 
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Toast.makeText(this, item.getTitle().toString(), Toast.LENGTH_SHORT).show();
+		return super.onOptionsItemSelected(item);
 	}
 
 }

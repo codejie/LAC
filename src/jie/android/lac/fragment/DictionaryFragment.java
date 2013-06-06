@@ -483,8 +483,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 
 		switch(item.getItemId()) {
 		case R.id.result_search:
-			onResultSearchClick();
-			break;
+			return onResultSearchClick();
 		}
 		
 		return super.onOptionsItemSelected(item);
@@ -496,8 +495,9 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshResultL
 		}
 	}
 
-	private void onResultSearchClick() {
-		showWordList();		
+	private boolean onResultSearchClick() {
+		showWordList();
+		return true;
 	}
 	
 	private void showListFootTip(boolean show, int resId) {
