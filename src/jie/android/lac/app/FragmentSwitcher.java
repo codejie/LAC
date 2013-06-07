@@ -18,7 +18,8 @@ public class FragmentSwitcher {
 	public enum FragmentType {
 
 		Welcome("welcome", true), Dictionary("dictionary", false), 
-		Memory("memory", false), Wizard("wizard", true), Test("test", true);
+		Memory("memory", false), Wizard("wizard", true), Test("test", true),
+		Import("import", true);
 		
 		private final String name;
 		private final boolean removed;//remove if hided
