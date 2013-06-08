@@ -7,7 +7,9 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +18,8 @@ public class ImportFragment extends BaseFragment {
 	private static final String Tag = ImportFragment.class.getSimpleName();
 	
 	private static final int HTTPD_PORT	=	20812;
+	
+	private TextView textAddress = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {		
@@ -26,11 +30,27 @@ public class ImportFragment extends BaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_import, container, false);
 		
-		TextView textAddress = (TextView) v.findViewById(R.id.textView2);
-		textAddress.setText(getLocalAddress());
-		return super.onCreateView(inflater, container, savedInstanceState);
+		textAddress = (TextView) v.findViewById(R.id.textView2);		
+		
+		Button btn = (Button) v.findViewById(R.id.button1);
+		btn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				onRefreshWifi();
+			}
+			
+		});
+		
+		onRefreshWifi();
+		
+		return v;
 	}
  
+	protected void onRefreshWifi() {
+		textAddress.setText(getLocalAddress());
+	}
+
 	private String getLocalAddress() {
 		getLACActivity();
 		WifiManager wm = (WifiManager) getLACActivity().getSystemService(Context.WIFI_SERVICE);
@@ -47,6 +67,7 @@ public class ImportFragment extends BaseFragment {
 		}
 		
 		return String.format("http://%d.%d.%d.%d:%d", (ip & 0xff), (ip >> 8 & 0xff), (ip >> 16 & 0xff), (ip >> 24 & 0xff), HTTPD_PORT);
-	}	
+	}
+	
 	
 }

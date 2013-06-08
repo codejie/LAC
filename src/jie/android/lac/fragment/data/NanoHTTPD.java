@@ -1,4 +1,4 @@
-package jie.android.lac.app.importer;
+package jie.android.lac.fragment.data;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;

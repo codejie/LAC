@@ -30,5 +30,6 @@
     <string name="lac_import_tip">Please access the below address via a browser under the same WIFI network.</string>
     <string name="lac_import_wifi_not_available">Wifi service is NOT available</string>
     <string name="lac_import_wifi_ip_failed">Get IP address failed</string>
+    <string name="lac_import_refresh">Refresh</string>
 
 </resources>
