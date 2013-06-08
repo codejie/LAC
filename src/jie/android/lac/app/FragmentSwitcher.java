@@ -3,6 +3,7 @@ package jie.android.lac.app;
 import jie.android.lac.R;
 import jie.android.lac.fragment.BaseFragment;
 import jie.android.lac.fragment.DictionaryFragment;
+import jie.android.lac.fragment.ImportFragment;
 import jie.android.lac.fragment.TestFragment;
 import jie.android.lac.fragment.WelcomeFragment;
 
@@ -56,6 +57,9 @@ public class FragmentSwitcher {
 			break;
 		case Dictionary:
 			fragment = new DictionaryFragment();
+			break;
+		case Import:
+			fragment = new ImportFragment();
 			break;
 		case Test:
 			fragment = new TestFragment();

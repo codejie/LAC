@@ -242,9 +242,10 @@ public class LACActivity extends SlidingFragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_app_search:
-			if (fragmentSwitcher.getCurrentFragmentType() != FragmentType.Dictionary) {
-				fragmentSwitcher.show(FragmentType.Dictionary);
-			}
+			fragmentSwitcher.show(FragmentType.Dictionary);
+			break;
+		case R.id.menu_app_import:
+			fragmentSwitcher.show(FragmentType.Import);
 			break;
 		}
 		
