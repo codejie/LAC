@@ -1,10 +1,15 @@
 package jie.android.lac.fragment;
 
+import java.io.IOException;
+
 import jie.android.lac.R;
+import jie.android.lac.fragment.data.HttpdServer;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,9 +22,32 @@ public class ImportFragment extends BaseFragment {
 
 	private static final String Tag = ImportFragment.class.getSimpleName();
 	
-	private static final int HTTPD_PORT	=	20812;
+	private static final int HTTPD_PORT		=	20812;
+	private static final int MSG_START_HTTPD	=	1;
+	private static final int MSG_STOP_HTTPD		=	2;
 	
 	private TextView textAddress = null;
+	
+	private HttpdServer server = null;
+	
+	private Handler handler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case MSG_START_HTTPD:
+				startHttpd();
+				break;
+			case MSG_STOP_HTTPD:
+				stopHttpd();
+				break;
+			default:
+				break;
+			}
+			super.handleMessage(msg);
+		}
+		
+	};
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {		
@@ -68,6 +96,21 @@ public class ImportFragment extends BaseFragment {
 		
 		return String.format("http://%d.%d.%d.%d:%d", (ip & 0xff), (ip >> 8 & 0xff), (ip >> 16 & 0xff), (ip >> 24 & 0xff), HTTPD_PORT);
 	}
-	
-	
+
+	protected void startHttpd() {
+		stopHttpd();
+		try {
+			server = new HttpdServer(HTTPD_PORT, "");
+		} catch (IOException e) {
+			
+		}
+	}
+
+
+	protected void stopHttpd() {
+		if (server != null) {
+			server.stop();
+			server = null;
+		}
+	}	
 }
