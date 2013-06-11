@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 
@@ -23,7 +24,7 @@ public class HttpdServer extends NanoHTTPD {
 			return uri;
 		}
 		
-		public abstract Response onRequest(String method, Properties header, Properties parms, Properties files) throws IOException;
+		public abstract Response onRequest(Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) throws IOException;
 		
 		protected InputStream getUriStream(final String file) throws IOException {
 			return new FileInputStream(HttpdServer.getRoot() + file);
@@ -37,8 +38,10 @@ public class HttpdServer extends NanoHTTPD {
 		}
 
 		@Override
-		public Response onRequest(String method, Properties header, Properties parms, Properties files) throws IOException {
-			return new Response(NanoHTTPD.HTTP_OK, NanoHTTPD.MIME_HTML, getUriStream("index.html"));
+		public Response onRequest(Method method, Map<String, String> header,
+				Map<String, String> parms, Map<String, String> files)
+				throws IOException {
+			return new Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_HTML, getUriStream("index.html"));
 		}		
 	}
 	
@@ -50,9 +53,11 @@ public class HttpdServer extends NanoHTTPD {
 	
 	
 	public HttpdServer(int port, final String wwwroot) throws IOException {
-		super(port, new File(wwwroot));
+		super(port);
 		
 		HttpdServer.root = wwwroot + File.separator;
+		
+		initRequest();
 	}
 	
 	public static String getRoot() {
@@ -63,9 +68,16 @@ public class HttpdServer extends NanoHTTPD {
 		mapRequest.put("", new BootRequest("index.html"));
 	}
 
-	@Override
-	public Response serve(String uri, String method, Properties header,	Properties parms, Properties files) {
+	private Response unsupportedRequest(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) {
+		return new Response(NanoHTTPD.Response.Status.NOT_FOUND, MIME_PLAINTEXT,	"Error 404, file not found. -- codejie");
+	}
 
+	private Response badRequest(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) {
+		return new Response(NanoHTTPD.Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT,	"500 Internal Server Error");
+	}
+
+	@Override
+	public Response serve(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) {
 		if (uri.startsWith("/")) {
 			uri = uri.substring(1);
 		}
@@ -80,14 +92,6 @@ public class HttpdServer extends NanoHTTPD {
 		}
 		
 		return unsupportedRequest(uri, method, header, parms, files);
-	}
-
-	private Response unsupportedRequest(String uri, String method, Properties header, Properties parms, Properties files) {
-		return new Response(HTTP_NOTFOUND, MIME_PLAINTEXT,	"Error 404, file not found. -- codejie");
-	}
-
-	private Response badRequest(String uri, String method, Properties header, Properties parms, Properties files) {
-		return new Response(HTTP_INTERNALERROR, MIME_PLAINTEXT,	"500 Internal Server Error");
 	}
 
 }

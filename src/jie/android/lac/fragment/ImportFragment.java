@@ -10,6 +10,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -75,23 +76,40 @@ public class ImportFragment extends BaseFragment {
 		return v;
 	}
  
-	protected void onRefreshWifi() {
-		textAddress.setText(getLocalAddress());
+	@Override
+	public void onDestroy() {
+		stopHttpd();
+		super.onDestroy();
 	}
 
-	private String getLocalAddress() {
+	protected void onRefreshWifi() {
+		String address = null;
+		try {
+			address = getLocalAddress();
+			
+			startHttpd();
+		} catch (IOException e) {
+			address = e.getMessage();
+		}		
+		textAddress.setText(address);
+		
+	}
+
+	private String getLocalAddress() throws IOException {
 		getLACActivity();
 		WifiManager wm = (WifiManager) getLACActivity().getSystemService(Context.WIFI_SERVICE);
 		if(wm.getWifiState() != WifiManager.WIFI_STATE_ENABLED) {
 			Toast.makeText(getLACActivity(), "Wifi is NOT available.", Toast.LENGTH_SHORT).show();
-			return getText(R.string.lac_import_wifi_not_available).toString();
+			throw new IOException(getText(R.string.lac_import_wifi_not_available).toString());
+//			return getText(R.string.lac_import_wifi_not_available).toString();
 		}
 		   
 		WifiInfo wi = wm.getConnectionInfo();
 		int ip = wi.getIpAddress();
 		if(ip == -1) {
 			Toast.makeText(getLACActivity(), "Get IP address failed.", Toast.LENGTH_SHORT).show();
-			return getText(R.string.lac_import_wifi_ip_failed).toString();
+			throw new IOException(getText(R.string.lac_import_wifi_ip_failed).toString());
+//			return getText(R.string.lac_import_wifi_ip_failed).toString();
 		}
 		
 		return String.format("http://%d.%d.%d.%d:%d", (ip & 0xff), (ip >> 8 & 0xff), (ip >> 16 & 0xff), (ip >> 24 & 0xff), HTTPD_PORT);
@@ -100,9 +118,10 @@ public class ImportFragment extends BaseFragment {
 	protected void startHttpd() {
 		stopHttpd();
 		try {
-			server = new HttpdServer(HTTPD_PORT, "");
+			server = new HttpdServer(HTTPD_PORT, getLACActivity().getConfig().getDataFolder());
+			server.start();
 		} catch (IOException e) {
-			
+			Log.e(Tag, "start httpd failed - " + e.getMessage());
 		}
 	}
 

@@ -11,14 +11,14 @@ public final class Configuration {
 	public static final String PREFS_SLIDING_FADE_DEGREE	=	"sliding_fade_degree";
 	
 	public static final String PREFS_DATA_LOCATION			=	"data_location";//0:not init; 1: card; 2: local
-//	private static final String PREFS_DATA_FOLDER			=	"data_folder";
+	public static final String PREFS_DATA_FOLDER			=	"data_folder";
 	
 	public static final String PREFS_WORD_PRE_PAGE			=	"word_per_page";
 	
 	private SharedPreferences prefs = null;
 	
 	public Configuration(Context context) {
-		prefs = context.getSharedPreferences("LAC", Context.MODE_PRIVATE);
+		prefs = context.getSharedPreferences("LAC", Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
 	}
 	
 	public boolean getWizardDone() {
@@ -26,7 +26,7 @@ public final class Configuration {
 	}
 	
 	public void setWizardDone(boolean value) {
-		prefs.edit().putBoolean(PREFS_WIZARD_DONE, value);
+		prefs.edit().putBoolean(PREFS_WIZARD_DONE, value).commit();
 	}
 	
 	public boolean getSlidingFadeEnabled() {
@@ -34,7 +34,7 @@ public final class Configuration {
 	}
 	
 	public void setSlidingFadeEnabled(boolean value) {
-		prefs.edit().putBoolean(PREFS_SLIDING_FADE_ENABLED, value);
+		prefs.edit().putBoolean(PREFS_SLIDING_FADE_ENABLED, value).commit();
 	}
 	
 	public float getSlidingFadeDegree() {
@@ -42,7 +42,7 @@ public final class Configuration {
 	}
 	
 	public void setSlidingFadeDegree(float value) {
-		prefs.edit().putFloat(PREFS_SLIDING_FADE_DEGREE, value);
+		prefs.edit().putFloat(PREFS_SLIDING_FADE_DEGREE, value).commit();
 	}
 	
 	public int getDataLocation() {
@@ -50,7 +50,7 @@ public final class Configuration {
 	}
 	
 	public void setDataLocation(int value) {
-		prefs.edit().putInt(PREFS_DATA_LOCATION, value);
+		prefs.edit().putInt(PREFS_DATA_LOCATION, value).commit();
 	}
 
 	public int getWordPrePage() {
@@ -58,15 +58,15 @@ public final class Configuration {
 	}
 	
 	public void setWordPrePage(int value) {
-		prefs.edit().putInt(PREFS_WORD_PRE_PAGE, value);
+		prefs.edit().putInt(PREFS_WORD_PRE_PAGE, value).commit();
 	}
 	
-//	public final String getDataFolder() {
-//		return prefs.getString(PREFS_DATA_FOLDER, "/mnt/sdcard/");
-//	}
-//	
-//	public void setDataFolder(final String value) {
-//		prefs.edit().putString(PREFS_DATA_FOLDER, value);
-//	}
+	public final String getDataFolder() {
+		return prefs.getString(PREFS_DATA_FOLDER, null);
+	}
+	
+	public void setDataFolder(final String value) {
+		prefs.edit().putString(PREFS_DATA_FOLDER, value).commit();
+	}
 	
 }

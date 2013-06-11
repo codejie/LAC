@@ -107,11 +107,11 @@ public class LACService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		
-		prefs  = getSharedPreferences("LAC", Context.MODE_PRIVATE);
-		Log.d(Tag, "service create : " + prefs.getInt(Configuration.PREFS_DATA_LOCATION, 0));
+		prefs  = getSharedPreferences("LAC", Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
+		Log.d(Tag, "service create : " + prefs.getInt(Configuration.PREFS_DATA_LOCATION, 12));
 	
 		dataPath = this.getDatabasePath(DBAccess.FILE).getParent() + File.separator;
-
+		prefs.edit().putString(Configuration.PREFS_DATA_FOLDER, dataPath).commit();
 //		initDataTask.execute();
 	}
 
