@@ -9,18 +9,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import android.util.Log;
+
 
 public class HttpdServer extends NanoHTTPD {
 	
 	protected abstract class Request {
 		
-		private String uri = null;
+		protected String uri = null;
 		
 		public Request(String uri) {
 			this.uri = uri;
 		}
 		
-		public final String gerUri() {
+		public final String getUri() {
 			return uri;
 		}
 		
@@ -32,9 +34,9 @@ public class HttpdServer extends NanoHTTPD {
 	}
 	
 	private class BootRequest extends Request {
-
-		public BootRequest(String uri) {
-			super(uri);
+		
+		public BootRequest() {
+			super("");
 		}
 
 		@Override
@@ -45,6 +47,53 @@ public class HttpdServer extends NanoHTTPD {
 		}		
 	}
 	
+	public class FileRequest extends Request {
+
+		public FileRequest(String uri) {
+			super(uri);
+		}
+
+		@Override
+		public Response onRequest(Method method, Map<String, String> header,
+				Map<String, String> parms, Map<String, String> files)
+				throws IOException {
+			return new Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_HTML, getUriStream(uri));			
+		}		
+	}
+	
+	public class ImportFileDone extends Request {
+
+		public ImportFileDone() {
+			super("import_file_done.html");
+		}
+
+		@Override
+		public Response onRequest(Method method, Map<String, String> header,
+				Map<String, String> parms, Map<String, String> files)
+				throws IOException {
+			
+			String ifile = parms.get("import");
+			if(ifile == null || ifile.equals("")) {
+				return new Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_HTML, getUriStream("err_missparameter.html"));
+			}
+			boolean oflag = !(parms.get("overwrite") == null || parms.get("overwrite").equals(""));
+			
+			String lfile = files.get("import");
+			if(lfile == null || lfile.equals("")) {
+				return new Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_HTML, getUriStream("err_missparameter.html"));
+			}
+			
+//			File f = new File(lfile);
+//			FileInputStream fi = new FileInputStream(f);
+//			int b = 0;
+//			while ((b = fi.read()) != -1) {
+//				Log.d("====", "b = " + b);
+//			}
+//			
+			return new Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_HTML, getUriStream(uri));			
+		}
+		
+	}
 	//
 	protected static String root = null;
 	
@@ -65,7 +114,21 @@ public class HttpdServer extends NanoHTTPD {
 	}
 
 	protected void initRequest() {
-		mapRequest.put("", new BootRequest("index.html"));
+		Request req = new BootRequest();
+		mapRequest.put(req.getUri(), req);
+		
+		req = new FileRequest("favicon.ico");
+		mapRequest.put(req.getUri(), req);
+		
+		req = new FileRequest("err_missparameter.html");
+		mapRequest.put(req.getUri(), req);		
+		
+		req = new FileRequest("import_file.html");
+		mapRequest.put(req.getUri(), req);
+
+		req = new ImportFileDone();
+		mapRequest.put(req.getUri(), req);
+		
 	}
 
 	private Response unsupportedRequest(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) {
@@ -84,6 +147,7 @@ public class HttpdServer extends NanoHTTPD {
 		
 		Request req = mapRequest.get(uri);
 		try {
+//			if (method == NanoHTTPD.Method.GET)
 			if (req != null) {
 				return req.onRequest(method, header, parms, files);
 			}
