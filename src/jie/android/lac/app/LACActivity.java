@@ -78,6 +78,9 @@ public class LACActivity extends SlidingFragmentActivity {
 		configuration = new Configuration(this);
 
 		configuration.setWordPrePage(15);
+		
+		String data = this.getFilesDir().getAbsolutePath();// this.getDatabasePath(null).getAbsolutePath();
+		Log.d("=====", data);
 	}
 
 	private void initView() {

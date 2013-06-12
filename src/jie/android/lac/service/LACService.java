@@ -24,8 +24,8 @@ public class LACService extends Service {
 
 	private ServiceStub serviceStub = null;
 	
-	private SharedPreferences prefs = null;
-	private String dataPath = null;
+//	private SharedPreferences prefs = null;
+//	private String dataPath = null;
 	
 	private DBAccess dbAccess = null;
 	private Dictionary dictionary = null;
@@ -115,13 +115,13 @@ public class LACService extends Service {
 //		initDataTask.execute();
 	}
 	
-	private void updateConfiguration() {
-		prefs  = getSharedPreferences("LAC", Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
-//		Log.d(Tag, "service create : " + prefs.getInt(Configuration.PREFS_DATA_LOCATION, 12));	
-		dataPath = this.getDatabasePath(DBAccess.FILE).getParent() + File.separator;
-		Log.d(Tag, "service datapath : " + dataPath);
-		prefs.edit().putString(Configuration.PREFS_DATA_FOLDER, dataPath).commit();		
-	}
+//	private void updateConfiguration() {
+//		prefs  = getSharedPreferences("LAC", Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
+////		Log.d(Tag, "service create : " + prefs.getInt(Configuration.PREFS_DATA_LOCATION, 12));	
+//		dataPath = this.getDatabasePath(DBAccess.FILE).getParent() + File.separator;
+//		Log.d(Tag, "service datapath : " + dataPath);
+//		prefs.edit().putString(Configuration.PREFS_DATA_FOLDER, dataPath).commit();
+//	}
 
 	@Override
 	public void onDestroy() {
@@ -133,9 +133,9 @@ public class LACService extends Service {
 
 	private void initDBAccess() {
 		
-		updateConfiguration();
+//		updateConfiguration();
 		
-		dbAccess = new DBAccess(this, dataPath + DBAccess.FILE);
+		dbAccess = new DBAccess(this, this.getDatabasePath(DBAccess.FILE).getParent() + File.separator + DBAccess.FILE);
 	}
 
 	private void releaseDBAccess() {
@@ -145,7 +145,7 @@ public class LACService extends Service {
 	}
 	
 	private boolean initDictionary() {		
-		dictionary = new Dictionary(dbAccess, dataPath);
+		dictionary = new Dictionary(dbAccess, this.getDatabasePath(DBAccess.FILE).getParent());
 		return dictionary.load();
 	}
 	
@@ -174,7 +174,7 @@ public class LACService extends Service {
 			AssetsHelper.UnzipTo(input, target.getAbsolutePath(), null);
 			//httpd.zip
 			input = this.getAssets().open("httpd.zip");
-			AssetsHelper.UnzipTo(input, target.getAbsolutePath() + File.separator + Configuration.SUB_FOLDER_HTTPD, null);
+			AssetsHelper.UnzipTo(input, this.getFilesDir() + File.separator + Configuration.SUB_FOLDER_HTTPD, null);
 		} catch (IOException e) {
 			e.printStackTrace();			
 			return false;

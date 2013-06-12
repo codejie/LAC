@@ -1,5 +1,6 @@
 package jie.android.lac.data;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -140,7 +141,7 @@ public class Dictionary {
 
 		private void init(final DBAccess dbAccess, final String dataPath) {
 			try {
-				fileAccess = new RandomAccessFile(dataPath + info.file, "r");
+				fileAccess = new RandomAccessFile(dataPath + File.separator + info.file, "r");
 				
 				loadBlockData(dbAccess);
 				

@@ -1,8 +1,10 @@
 package jie.android.lac.fragment;
 
+import java.io.File;
 import java.io.IOException;
 
 import jie.android.lac.R;
+import jie.android.lac.app.Configuration;
 import jie.android.lac.fragment.data.HttpdServer;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
@@ -118,7 +120,7 @@ public class ImportFragment extends BaseFragment {
 	protected void startHttpd() {
 		stopHttpd();
 		try {
-			server = new HttpdServer(HTTPD_PORT, getLACActivity().getConfig().getHttpdFolder());
+			server = new HttpdServer(HTTPD_PORT, getLACActivity().getFilesDir() + File.separator + Configuration.SUB_FOLDER_HTTPD);
 			server.start();
 		} catch (IOException e) {
 			Log.e(Tag, "start httpd failed - " + e.getMessage());
