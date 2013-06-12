@@ -2,6 +2,8 @@ package jie.android.lac.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.util.Log;
 
 public final class Configuration {
 
@@ -15,10 +17,20 @@ public final class Configuration {
 	
 	public static final String PREFS_WORD_PRE_PAGE			=	"word_per_page";
 	
+	public static final String SUB_FOLDER_HTTPD			=	"httpd";
+	
 	private SharedPreferences prefs = null;
 	
 	public Configuration(Context context) {
 		prefs = context.getSharedPreferences("LAC", Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
+		prefs.registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
+
+			@Override
+			public void onSharedPreferenceChanged(SharedPreferences arg0,	String arg1) {
+				Log.d("-=====", "change:" + arg1);
+			}
+			
+		});
 	}
 	
 	public boolean getWizardDone() {
@@ -67,6 +79,10 @@ public final class Configuration {
 	
 	public void setDataFolder(final String value) {
 		prefs.edit().putString(PREFS_DATA_FOLDER, value).commit();
+	}
+	
+	public final String getHttpdFolder() {
+		return prefs.getString(PREFS_DATA_FOLDER, null) + SUB_FOLDER_HTTPD;
 	}
 	
 }

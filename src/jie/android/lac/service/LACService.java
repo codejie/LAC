@@ -107,12 +107,20 @@ public class LACService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		
-		prefs  = getSharedPreferences("LAC", Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
-		Log.d(Tag, "service create : " + prefs.getInt(Configuration.PREFS_DATA_LOCATION, 12));
-	
-		dataPath = this.getDatabasePath(DBAccess.FILE).getParent() + File.separator;
-		prefs.edit().putString(Configuration.PREFS_DATA_FOLDER, dataPath).commit();
+//		prefs  = getSharedPreferences("LAC", Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
+//		Log.d(Tag, "service create : " + prefs.getInt(Configuration.PREFS_DATA_LOCATION, 12));
+//	
+//		dataPath = this.getDatabasePath(DBAccess.FILE).getParent() + File.separator;
+//		prefs.edit().putString(Configuration.PREFS_DATA_FOLDER, dataPath).commit();
 //		initDataTask.execute();
+	}
+	
+	private void updateConfiguration() {
+		prefs  = getSharedPreferences("LAC", Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
+//		Log.d(Tag, "service create : " + prefs.getInt(Configuration.PREFS_DATA_LOCATION, 12));	
+		dataPath = this.getDatabasePath(DBAccess.FILE).getParent() + File.separator;
+		Log.d(Tag, "service datapath : " + dataPath);
+		prefs.edit().putString(Configuration.PREFS_DATA_FOLDER, dataPath).commit();		
 	}
 
 	@Override
@@ -124,6 +132,9 @@ public class LACService extends Service {
 	}
 
 	private void initDBAccess() {
+		
+		updateConfiguration();
+		
 		dbAccess = new DBAccess(this, dataPath + DBAccess.FILE);
 	}
 
@@ -158,8 +169,12 @@ public class LACService extends Service {
 		
 		InputStream input;
 		try {
+			//lac2.zip
 			input = this.getAssets().open("lac2.zip");
-			AssetsHelper.UnzipTo(input, target.getAbsolutePath(), null);			
+			AssetsHelper.UnzipTo(input, target.getAbsolutePath(), null);
+			//httpd.zip
+			input = this.getAssets().open("httpd.zip");
+			AssetsHelper.UnzipTo(input, target.getAbsolutePath() + File.separator + Configuration.SUB_FOLDER_HTTPD, null);
 		} catch (IOException e) {
 			e.printStackTrace();			
 			return false;

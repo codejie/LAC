@@ -118,7 +118,7 @@ public class ImportFragment extends BaseFragment {
 	protected void startHttpd() {
 		stopHttpd();
 		try {
-			server = new HttpdServer(HTTPD_PORT, getLACActivity().getConfig().getDataFolder());
+			server = new HttpdServer(HTTPD_PORT, getLACActivity().getConfig().getHttpdFolder());
 			server.start();
 		} catch (IOException e) {
 			Log.e(Tag, "start httpd failed - " + e.getMessage());

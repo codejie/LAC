@@ -24,7 +24,7 @@ public class AssetsHelper {
 		
 		File file = new File(outputPath);
 		if(!file.exists()) {
-			return -1;
+			file.mkdir();
 		}
 		
 		ZipInputStream zipStream = new ZipInputStream(input);
