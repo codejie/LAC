@@ -9,6 +9,7 @@ import jie.android.lac.data.Dictionary;
 import jie.android.lac.data.Word;
 import jie.android.lac.service.aidl.Access;
 import jie.android.lac.service.aidl.Callback;
+import jie.android.lac.service.aidl.ImportDatabaseListener;
 
 public class ServiceStub extends Access.Stub {
 	
@@ -73,6 +74,13 @@ public class ServiceStub extends Access.Stub {
 	@Override
 	public void unregisterCallback(int id) throws RemoteException {
 		service.setAppCallback(id, null);
+	}
+
+	@Override
+	public void ImportDBFile(String file, ImportDatabaseListener listener)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		
 	}
 
 

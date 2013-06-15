@@ -2,6 +2,8 @@
 package jie.android.lac.service.aidl;
 
 import jie.android.lac.service.aidl.Callback;
+import jie.android.lac.service.aidl.ImportDatabaseListener;
+
 import jie.android.lac.data.Word;
 import jie.android.lac.data.Dictionary;
 
@@ -18,5 +20,6 @@ interface Access {
 	List<Dictionary.SimpleInfo> queryDictionarySimpleInfo();
 	void setDictionaryOrder(in int index, in int order);
 	void setEnableDictionary(in int index, in boolean enable);
-	
+	//Import
+	void ImportDBFile(in String file, in ImportDatabaseListener listener);
 }

@@ -3,7 +3,7 @@ package jie.android.lac.app;
 import jie.android.lac.R;
 import jie.android.lac.fragment.BaseFragment;
 import jie.android.lac.fragment.DictionaryFragment;
-import jie.android.lac.fragment.ImportFragment;
+import jie.android.lac.fragment.HttpdFragment;
 import jie.android.lac.fragment.TestFragment;
 import jie.android.lac.fragment.WelcomeFragment;
 
@@ -20,7 +20,7 @@ public class FragmentSwitcher {
 
 		Welcome("welcome", true), Dictionary("dictionary", false), 
 		Memory("memory", false), Wizard("wizard", true), Test("test", true),
-		Import("import", true);
+		Httpd("httpd", true);
 		
 		private final String name;
 		private final boolean removed;//remove if hided
@@ -58,8 +58,8 @@ public class FragmentSwitcher {
 		case Dictionary:
 			fragment = new DictionaryFragment();
 			break;
-		case Import:
-			fragment = new ImportFragment();
+		case Httpd:
+			fragment = new HttpdFragment();
 			break;
 		case Test:
 			fragment = new TestFragment();

@@ -248,7 +248,7 @@ public class LACActivity extends SlidingFragmentActivity {
 			fragmentSwitcher.show(FragmentType.Dictionary);
 			break;
 		case R.id.menu_app_import:
-			fragmentSwitcher.show(FragmentType.Import);
+			fragmentSwitcher.show(FragmentType.Httpd);
 			break;
 		}
 		

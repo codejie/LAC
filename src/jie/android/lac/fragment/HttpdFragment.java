@@ -21,9 +21,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ImportFragment extends BaseFragment {
+public class HttpdFragment extends BaseFragment {
 
-	private static final String Tag = ImportFragment.class.getSimpleName();
+	private static final String Tag = HttpdFragment.class.getSimpleName();
 	
 	private static final int HTTPD_PORT		=	20812;
 	private static final int MSG_START_HTTPD	=	1;
