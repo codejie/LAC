@@ -1,10 +1,15 @@
 package jie.android.lac.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.database.Cursor;
 import android.os.RemoteException;
+import android.util.Log;
 import jie.android.lac.data.Dictionary;
 import jie.android.lac.data.Word;
 import jie.android.lac.service.aidl.Access;
@@ -77,10 +82,33 @@ public class ServiceStub extends Access.Stub {
 	}
 
 	@Override
-	public void ImportDBFile(String file, ImportDatabaseListener listener)
-			throws RemoteException {
-		// TODO Auto-generated method stub
+	public void ImportDBFile(String lfile, ImportDatabaseListener listener) throws RemoteException {
 		
+		if (listener != null) {
+			listener.onStarted();
+		}
+		
+		File f = new File(lfile);
+		FileInputStream fi;
+		try {
+			fi = new FileInputStream(f);
+			
+			int b = 0;
+			while ((b = fi.read()) != -1) {
+				Log.d("====", "b = " + b);
+			}			
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if (listener != null) {
+			listener.onCompleted(100);
+		}		
 	}
 
 

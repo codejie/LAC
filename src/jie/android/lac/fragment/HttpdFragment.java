@@ -6,12 +6,15 @@ import java.io.IOException;
 import jie.android.lac.R;
 import jie.android.lac.app.Configuration;
 import jie.android.lac.fragment.data.HttpdServer;
+import jie.android.lac.service.aidl.ImportDatabaseListener;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +28,33 @@ public class HttpdFragment extends BaseFragment {
 
 	private static final String Tag = HttpdFragment.class.getSimpleName();
 	
+	
+	private class Listener extends ImportDatabaseListener.Stub {
+
+		@Override
+		public void onStarted() throws RemoteException {
+			Log.d(Tag, "listener:onStarted()");
+		}
+
+		@Override
+		public void onCompleted(int total) throws RemoteException {
+			Log.d(Tag, "listener:onStarted() - total : " + total);
+		}
+
+		@Override
+		public void onImported(String text) throws RemoteException {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	
+	
 	private static final int HTTPD_PORT		=	20812;
-	private static final int MSG_START_HTTPD	=	1;
-	private static final int MSG_STOP_HTTPD		=	2;
+	public static final int MSG_START_HTTPD	=	1;
+	public static final int MSG_STOP_HTTPD		=	2;
+	public static final int MSG_IMPORT_DATABASE	=	3;
 	
 	private TextView textAddress = null;
 	
@@ -44,6 +71,9 @@ public class HttpdFragment extends BaseFragment {
 			case MSG_STOP_HTTPD:
 				stopHttpd();
 				break;
+			case MSG_IMPORT_DATABASE:
+				importDatabase(msg.getData().getString("localfile"));
+				break;
 			default:
 				break;
 			}
@@ -51,7 +81,7 @@ public class HttpdFragment extends BaseFragment {
 		}
 		
 	};
-	
+		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(savedInstanceState);
@@ -89,7 +119,8 @@ public class HttpdFragment extends BaseFragment {
 		try {
 			address = getLocalAddress();
 			
-			startHttpd();
+			handler.sendMessage(Message.obtain(handler, MSG_START_HTTPD));
+//			startHttpd();
 		} catch (IOException e) {
 			address = e.getMessage();
 		}		
@@ -120,7 +151,8 @@ public class HttpdFragment extends BaseFragment {
 	protected void startHttpd() {
 		stopHttpd();
 		try {
-			server = new HttpdServer(HTTPD_PORT, getLACActivity().getFilesDir() + File.separator + Configuration.SUB_FOLDER_HTTPD);
+			String root = getLACActivity().getFilesDir() + File.separator + Configuration.SUB_FOLDER_HTTPD;
+			server = new HttpdServer(HTTPD_PORT, root, handler);
 			server.start();
 		} catch (IOException e) {
 			Log.e(Tag, "start httpd failed - " + e.getMessage());
@@ -132,6 +164,15 @@ public class HttpdFragment extends BaseFragment {
 		if (server != null) {
 			server.stop();
 			server = null;
+		}
+	}
+
+	protected void importDatabase(String file) {
+		try {
+			getLACActivity().getServiceAccess().ImportDBFile(file, new Listener());
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}	
 }

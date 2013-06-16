@@ -9,10 +9,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import jie.android.lac.fragment.HttpdFragment;
+
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 
 public class HttpdServer extends NanoHTTPD {
+	
+	private static final String Tag = HttpdServer.class.getSimpleName();
 	
 	protected abstract class Request {
 		
@@ -83,6 +89,11 @@ public class HttpdServer extends NanoHTTPD {
 				return new Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_HTML, getUriStream("err_missparameter.html"));
 			}
 			
+			Log.d(HttpdServer.Tag, "request - importfiledone - lfile" + lfile);
+			Message msg = Message.obtain(HttpdServer.handler, HttpdFragment.MSG_IMPORT_DATABASE);
+			msg.getData().putString("localfile", lfile);
+			
+			HttpdServer.handler.sendMessage(msg);
 //			File f = new File(lfile);
 //			FileInputStream fi = new FileInputStream(f);
 //			int b = 0;
@@ -96,15 +107,17 @@ public class HttpdServer extends NanoHTTPD {
 	}
 	//
 	protected static String root = null;
+	protected static Handler handler = null;
 	
 	protected HashMap<String, Request> mapRequest = new HashMap<String, Request>();
 	
 	
 	
-	public HttpdServer(int port, final String wwwroot) throws IOException {
+	public HttpdServer(int port, final String wwwroot, Handler handler) throws IOException {
 		super(port);
 		
 		HttpdServer.root = wwwroot + File.separator;
+		HttpdServer.handler = handler;
 		
 		initRequest();
 	}
@@ -144,6 +157,8 @@ public class HttpdServer extends NanoHTTPD {
 		if (uri.startsWith("/")) {
 			uri = uri.substring(1);
 		}
+		
+		Log.d(Tag, "httpd - method:" + method.toString() + " uri:" + uri);
 		
 		Request req = mapRequest.get(uri);
 		try {
