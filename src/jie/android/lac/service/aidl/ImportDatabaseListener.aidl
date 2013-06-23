@@ -1,7 +1,8 @@
 package jie.android.lac.service.aidl;
 
 interface ImportDatabaseListener {
-	void onStarted();
+	void onStarted(in String file);
+	void onImported(in int position, in String text);
 	void onCompleted(in int total);
-	void onImported(in String text);
+	void onFailed(in String what);
 }

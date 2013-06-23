@@ -32,19 +32,23 @@ public class HttpdFragment extends BaseFragment {
 	private class Listener extends ImportDatabaseListener.Stub {
 
 		@Override
-		public void onStarted() throws RemoteException {
-			Log.d(Tag, "listener:onStarted()");
+		public void onStarted(String file) throws RemoteException {
+			Log.d(Tag, "listener:onStarted() - file:" + file);			
+		}
+
+		@Override
+		public void onImported(int position, String text)throws RemoteException {
+			Log.d(Tag, "listener:onImported() text:" + text);			
 		}
 
 		@Override
 		public void onCompleted(int total) throws RemoteException {
-			Log.d(Tag, "listener:onStarted() - total : " + total);
+			Log.d(Tag, "listener:onSCompleted() - total : " + total);
 		}
-
+		
 		@Override
-		public void onImported(String text) throws RemoteException {
-			// TODO Auto-generated method stub
-			
+		public void onFailed(String what) throws RemoteException {
+			Log.d(Tag, "listener:onFailed() what:" + what);			
 		}
 		
 	}

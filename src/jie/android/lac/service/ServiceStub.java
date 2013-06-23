@@ -85,7 +85,7 @@ public class ServiceStub extends Access.Stub {
 	public void ImportDBFile(String lfile, ImportDatabaseListener listener) throws RemoteException {
 		
 		if (listener != null) {
-			listener.onStarted();
+			listener.onStarted(lfile);
 		}
 		
 		File f = new File(lfile);
