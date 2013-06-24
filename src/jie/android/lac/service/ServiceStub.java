@@ -91,7 +91,7 @@ public class ServiceStub extends Access.Stub {
 		
 		DBImportHelper helper = new DBImportHelper(service.getDBAccess(), lfile);
 		if (helper.init()) {
-			helper.importData();
+			helper.importData(listener);
 		} else {
 			if (listener != null) {
 				listener.onFailed("import init failed.");

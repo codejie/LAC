@@ -2,18 +2,22 @@ package jie.android.lac.service;
 
 import java.util.ArrayList;
 
+import jie.android.lac.service.aidl.ImportDatabaseListener;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.RemoteException;
 
 public class DBImportHelper {
 
 	private DBAccess dbAccess = null;
 	private String importFile = null;
 	
-	private SQLiteDatabase importDb = null;
+	private SQLiteDatabase importDb = null;	
+	private ImportDatabaseListener importListener = null;
 	
 	public DBImportHelper(DBAccess dbAccess, final String importFile) {
 		this.dbAccess = dbAccess;
@@ -29,15 +33,19 @@ public class DBImportHelper {
 		return true;
 	}
 	
-	public boolean importData() {
+	public boolean importData(ImportDatabaseListener listener) throws RemoteException {
+		importListener = listener;
 		//dictionary
 		if (!importDictInfo())
 			return false;
 		//data
+		if (!importWordData()) {
+			
+		}
 		return true;
 	}
 
-	private boolean importDictInfo() {
+	private boolean importDictInfo() throws RemoteException {
 		Cursor cursor = importDb.query("dict_info", null, null, null, null, null, null);
 		try {
 			if (cursor != null && cursor.moveToFirst()) {
@@ -57,6 +65,9 @@ public class DBImportHelper {
 
 					dbAccess.importDictInfo(values);
 					
+					if (importListener != null) {
+						importListener.onImported(cursor.getInt(0), "Dictionary : " + cursor.getShort(2));
+					}
 				} while (cursor.moveToNext());
 			}
 		} finally {
@@ -64,5 +75,9 @@ public class DBImportHelper {
 		}
 		return true;
 	}
-	
+
+	private boolean importWordData() {
+		// TODO Auto-generated method stub
+		return false;
+	}	
 }
