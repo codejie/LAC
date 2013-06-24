@@ -172,6 +172,9 @@ public class HttpdFragment extends BaseFragment {
 	}
 
 	protected void importDatabase(String file) {
+		
+		Log.d("===", "httpd:importDatabase");
+		
 		try {
 			getLACActivity().getServiceAccess().ImportDBFile(file, new Listener());
 		} catch (RemoteException e) {

@@ -1,5 +1,8 @@
 package jie.android.lac.service;
 
+import java.util.ArrayList;
+
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -68,6 +71,20 @@ public class DBAccess {
 
 	public Cursor queryWordXmlIndex(int dictIndex, int wordIndex) {
 		return db.query("word_index_" + dictIndex, Projection.WordIndex, "wordid=" + wordIndex, null, null,null, null);
+	}
+
+	public void importDictInfo(ContentValues values) {
+		
+		Log.d("===", "dbaccess:importDictInfo");
+		try {
+			db.beginTransaction();
+			Long rowid = db.insert("dict_info", null, values);
+			Log.d(Tag, "import dict info - rowid = : " + rowid);
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
+		Log.d("===", "dbaccess:importDictInfo - end");
 	}
 
 }

@@ -84,26 +84,19 @@ public class ServiceStub extends Access.Stub {
 	@Override
 	public void ImportDBFile(String lfile, ImportDatabaseListener listener) throws RemoteException {
 		
+		Log.d("===", "service:ImportDBFile");
 		if (listener != null) {
 			listener.onStarted(lfile);
 		}
 		
-		File f = new File(lfile);
-		FileInputStream fi;
-		try {
-			fi = new FileInputStream(f);
-			
-			int b = 0;
-			while ((b = fi.read()) != -1) {
-				Log.d("====", "b = " + b);
-			}			
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		DBImportHelper helper = new DBImportHelper(service.getDBAccess(), lfile);
+		if (helper.init()) {
+			helper.importData();
+		} else {
+			if (listener != null) {
+				listener.onFailed("import init failed.");
+			}
+			return;
 		}
 		
 		if (listener != null) {
