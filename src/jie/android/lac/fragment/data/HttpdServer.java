@@ -105,14 +105,15 @@ public class HttpdServer extends NanoHTTPD {
 		    try {
 		    	copyCacheFile(lfile, dst);
 		    } catch (IOException e) {
-		    	Log.d(HttpdServer.Tag, "request - importfiledone failed : - " + tgt.getAbsolutePath());
+		    	Log.d(HttpdServer.Tag, "request - importfiledone failed : - " + dst);
 		    }
 			
-			Log.d(HttpdServer.Tag, "request - importfiledone - " + tgt.getAbsolutePath());
+			Log.d(HttpdServer.Tag, "request - importfiledone - " + dst);
 			Message msg = Message.obtain(HttpdServer.handler, HttpdFragment.MSG_IMPORT_DATABASE);
-			msg.getData().putString("localfile", tgt.getAbsolutePath());
+			msg.getData().putString("localfile", dst);
 			
-//			HttpdServer.handler.sendMessage(msg);
+			HttpdServer.handler.sendMessage(msg);
+			
 //			File f = new File(lfile);
 //			FileInputStream fi = new FileInputStream(f);
 //			int b = 0;
