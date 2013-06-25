@@ -38,10 +38,7 @@ public class DBImportHelper {
 		//dictionary
 		if (!importDictInfo())
 			return false;
-		//data
-		if (!importWordData()) {
-			
-		}
+
 		return true;
 	}
 
@@ -49,6 +46,7 @@ public class DBImportHelper {
 		Cursor cursor = importDb.query("dict_info", null, null, null, null, null, null);
 		try {
 			if (cursor != null && cursor.moveToFirst()) {
+				dbAccess.beginTransaction();
 				do {
 					ContentValues values = new ContentValues();
 					values.put("idx", cursor.getInt(0));
@@ -63,11 +61,24 @@ public class DBImportHelper {
 					values.put("target", cursor.getString(9));
 					values.put("owner", cursor.getString(10));
 
-					dbAccess.importDictInfo(values);
-					
+					dbAccess.beginTransaction();
+
+					Long rowid = dbAccess.importDictInfo(values);
 					if (importListener != null) {
-						importListener.onImported(cursor.getInt(0), "Dictionary : " + cursor.getShort(2));
+						importListener.onImported(rowid.intValue(), "Dictionary Info : " + cursor.getInt(2));
 					}
+					importBlockData(cursor.getInt(0));
+					if (importListener != null) {
+						importListener.onImported(rowid.intValue(), "Dictionary Block Info complete.");
+					}
+
+					importWordData(cursor.getInt(0));
+					if (importListener != null) {
+						importListener.onImported(rowid.intValue(), "Dictionary Word Info complete.");
+					}
+					
+					dbAccess.endTransaction(true);
+					
 				} while (cursor.moveToNext());
 			}
 		} finally {
@@ -76,8 +87,46 @@ public class DBImportHelper {
 		return true;
 	}
 
-	private boolean importWordData() {
-		// TODO Auto-generated method stub
+	private boolean importBlockData(int dictid) throws RemoteException {
+		if (!dbAccess.createBlockDataTable(dictid))
+			return false;
+		
+		Cursor cursor = importDb.query("block_info_" + dictid, null, null, null, null, null, null);
+		try {
+			if (cursor != null && cursor.moveToFirst()) {
+
+				do {
+					ContentValues values = new ContentValues();
+					values.put("idx", cursor.getInt(0));
+					values.put("offset", cursor.getInt(1));
+					values.put("length", cursor.getInt(2));
+					values.put("start", cursor.getInt(3));
+					values.put("end", cursor.getInt(4));
+					
+					if (dbAccess.importBlockData(dictid, values) == -1) {
+						if (importListener != null) {
+							importListener.onImported(-1, "Dictionary Block Info failed.");
+						}						
+					}
+					
+				} while (cursor.moveToNext());
+			}
+			
+		} finally {
+			cursor.close();
+		}
+		
+		return true;
+	}
+
+	private boolean importWordData(int dictid) {
+		
+		try {
+			
+		} finally {
+			
+		}
+		
 		return false;
 	}	
 }

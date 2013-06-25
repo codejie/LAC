@@ -73,18 +73,30 @@ public class DBAccess {
 		return db.query("word_index_" + dictIndex, Projection.WordIndex, "wordid=" + wordIndex, null, null,null, null);
 	}
 
-	public void importDictInfo(ContentValues values) {
-		
-		Log.d("===", "dbaccess:importDictInfo");
-		try {
-			db.beginTransaction();
-			Long rowid = db.insert("dict_info", null, values);
-			Log.d(Tag, "import dict info - rowid = : " + rowid);
+	public void beginTransaction() {
+		db.beginTransaction();
+	}
+	
+	public void endTransaction(boolean succ) {
+		if (succ) {
 			db.setTransactionSuccessful();
-		} finally {
-			db.endTransaction();
 		}
-		Log.d("===", "dbaccess:importDictInfo - end");
+		db.endTransaction(); 
+	}
+	
+	public Long importDictInfo(ContentValues values) {
+		return db.insert("dict_info", null, values);
+	}
+
+	public boolean createBlockDataTable(int dictid) {
+		String sql = "CREATE TABLE [block_info_" + dictid + "] ([idx] INTEGER PRIMARY KEY, [offset] INTEGER, [length] INTEGER, [start] INTEGER, [end] INTEGER);";
+		db.execSQL(sql);
+		
+		return true;
+	}
+
+	public Long importBlockData(int dictid, ContentValues values) {
+		return db.insert("block_info_" + dictid, null, values);
 	}
 
 }

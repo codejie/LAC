@@ -1,5 +1,7 @@
 package jie.android.lac.app;
 
+import java.util.Calendar;
+
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.slidingmenu.lib.SlidingMenu;
@@ -262,4 +264,19 @@ public class LACActivity extends SlidingFragmentActivity {
 		return super.onPrepareOptionsMenu(menu);
 	}
 
+//	private long getOneYearAgo() {
+//		Calendar oneYearAgo = Calendar.getInstance();
+//		oneYearAgo.add(Calendar.YEAR, -1);
+////		oneYearAgo.add(Calendar.DAY_OF_MONTH, 0);
+//		oneYearAgo.set(Calendar.HOUR_OF_DAY, 0);
+//		oneYearAgo.set(Calendar.MINUTE, 0);
+//		oneYearAgo.set(Calendar.SECOND, 0);
+//		oneYearAgo.set(Calendar.MILLISECOND, 0);
+//		Log.d(Tag, "=======oneyearago:" + oneYearAgo.getTime().toString());
+//		
+//		
+//		
+//		return oneYearAgo.getTimeInMillis();
+//	}
+		
 }

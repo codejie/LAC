@@ -3,14 +3,18 @@ package jie.android.lac.fragment.data;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import jie.android.lac.fragment.HttpdFragment;
 
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -89,11 +93,26 @@ public class HttpdServer extends NanoHTTPD {
 				return new Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_HTML, getUriStream("err_missparameter.html"));
 			}
 			
-			Log.d(HttpdServer.Tag, "request - importfiledone - lfile" + lfile);
-			Message msg = Message.obtain(HttpdServer.handler, HttpdFragment.MSG_IMPORT_DATABASE);
-			msg.getData().putString("localfile", lfile);
+			String path = Environment.getExternalStorageDirectory() + "/tmp/lac";
+			File tgt = new File(path);
+			if (!tgt.exists()) {
+				if (!tgt.mkdirs()) {
+					Log.d(HttpdServer.Tag, "request - importfiledone - temporary directory failed : " + tgt.getAbsolutePath());
+				}
+			}
+		    String dst = tgt.getAbsolutePath() + File.separator + "import.db";			
 			
-			HttpdServer.handler.sendMessage(msg);
+		    try {
+		    	copyCacheFile(lfile, dst);
+		    } catch (IOException e) {
+		    	Log.d(HttpdServer.Tag, "request - importfiledone failed : - " + tgt.getAbsolutePath());
+		    }
+			
+			Log.d(HttpdServer.Tag, "request - importfiledone - " + tgt.getAbsolutePath());
+			Message msg = Message.obtain(HttpdServer.handler, HttpdFragment.MSG_IMPORT_DATABASE);
+			msg.getData().putString("localfile", tgt.getAbsolutePath());
+			
+//			HttpdServer.handler.sendMessage(msg);
 //			File f = new File(lfile);
 //			FileInputStream fi = new FileInputStream(f);
 //			int b = 0;
@@ -102,6 +121,26 @@ public class HttpdServer extends NanoHTTPD {
 //			}
 //			
 			return new Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_HTML, getUriStream(uri));			
+		}
+
+		private boolean copyCacheFile(String lfile, String dst) throws IOException {
+		    InputStream in = null;		    
+		    OutputStream out = null;
+			try {
+				in = new FileInputStream(lfile);				
+				out = new FileOutputStream(dst);
+				
+			    byte[] buf = new byte[1024];
+			    int len = -1;
+			    while ((len = in.read(buf)) > 0) {
+			        out.write(buf, 0, len);
+			    }
+			} finally {
+			    in.close();
+			    out.close();				
+			}
+			
+			return true;
 		}
 		
 	}
