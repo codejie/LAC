@@ -46,7 +46,6 @@ public class DBImportHelper {
 		Cursor cursor = importDb.query("dict_info", null, null, null, null, null, null);
 		try {
 			if (cursor != null && cursor.moveToFirst()) {
-				dbAccess.beginTransaction();
 				do {
 					ContentValues values = new ContentValues();
 					values.put("idx", cursor.getInt(0));
@@ -62,22 +61,23 @@ public class DBImportHelper {
 					values.put("owner", cursor.getString(10));
 
 					dbAccess.beginTransaction();
-
-					Long rowid = dbAccess.importDictInfo(values);
-					if (importListener != null) {
-						importListener.onImported(rowid.intValue(), "Dictionary Info : " + cursor.getInt(2));
+					try {
+						Long rowid = dbAccess.importDictInfo(values);
+						if (importListener != null) {
+							importListener.onImported(rowid.intValue(), "Dictionary Info : " + cursor.getInt(2));
+						}
+						importBlockData(cursor.getInt(0));
+						if (importListener != null) {
+							importListener.onImported(rowid.intValue(), "Dictionary Block Info complete.");
+						}
+	
+						importWordData(cursor.getInt(0));
+						if (importListener != null) {
+							importListener.onImported(rowid.intValue(), "Dictionary Word Info complete.");
+						}
+					} finally {					
+						dbAccess.endTransaction(true);
 					}
-					importBlockData(cursor.getInt(0));
-					if (importListener != null) {
-						importListener.onImported(rowid.intValue(), "Dictionary Block Info complete.");
-					}
-
-					importWordData(cursor.getInt(0));
-					if (importListener != null) {
-						importListener.onImported(rowid.intValue(), "Dictionary Word Info complete.");
-					}
-					
-					dbAccess.endTransaction(true);
 					
 				} while (cursor.moveToNext());
 			}

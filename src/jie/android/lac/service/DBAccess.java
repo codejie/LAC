@@ -81,7 +81,7 @@ public class DBAccess {
 		if (succ) {
 			db.setTransactionSuccessful();
 		}
-		db.endTransaction(); 
+		db.endTransaction();
 	}
 	
 	public Long importDictInfo(ContentValues values) {
