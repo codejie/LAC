@@ -120,11 +120,29 @@ public class DBImportHelper {
 	}
 
 	private boolean importWordData(int dictid) {
+		if (!dbAccess.createWordIndexTable(dictid)) {
+			return false;
+		}
 		
+		Cursor cursor = importDb.query("word_info", null, null, null, null, null, null);
 		try {
+			if (cursor != null && cursor.moveToFirst()) {
+				do {
+					ContentValues values = new ContentValues();
+					values.put("word", cursor.getString(1));
+					values.put("flag", cursor.getInt(2));
+					
+					Long rowid = dbAccess.importWordData(values);
+					if (rowid != -1) {
+						importWordIndex(dictid, cursor.getInt(0), rowid);
+					} else {
+						
+					}
+				} while (cursor.moveToNext());
+			}
 			
 		} finally {
-			
+			cursor.close();
 		}
 		
 		return false;

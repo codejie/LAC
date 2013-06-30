@@ -99,4 +99,14 @@ public class DBAccess {
 		return db.insert("block_info_" + dictid, null, values);
 	}
 
+	public boolean createWordIndexTable(int dictid) {
+		String sql = "CREATE TABLE [word_index_" + dictid + "] ( [word_idx] INTEGER, [idx] INTEGER, [offset] INTEGER, [length] INTEGER, [block1] INTEGER);";
+		db.execSQL(sql);
+		
+		sql = "CREATE INDEX [index_word_index_" + dictid + "_word_idx] ON [word_index_" + dictid + "] (word_idx ASC);";
+		db.execSQL(sql);
+		
+		return true;
+	}
+
 }
