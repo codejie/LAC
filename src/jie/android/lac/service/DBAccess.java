@@ -70,7 +70,7 @@ public class DBAccess {
 	}
 
 	public Cursor queryWordXmlIndex(int dictIndex, int wordIndex) {
-		return db.query("word_index_" + dictIndex, Projection.WordIndex, "wordid=" + wordIndex, null, null,null, null);
+		return db.query("word_index_" + dictIndex, Projection.WordIndex, "word_idx=" + wordIndex, null, null,null, null);
 	}
 
 	public void beginTransaction() {
@@ -84,7 +84,7 @@ public class DBAccess {
 		db.endTransaction();
 	}
 	
-	public Long importDictInfo(ContentValues values) {
+	public long importDictInfo(ContentValues values) {
 		return db.insert("dict_info", null, values);
 	}
 
@@ -95,7 +95,7 @@ public class DBAccess {
 		return true;
 	}
 
-	public Long importBlockData(int dictid, ContentValues values) {
+	public long importBlockData(int dictid, ContentValues values) {
 		return db.insert("block_info_" + dictid, null, values);
 	}
 
@@ -107,6 +107,31 @@ public class DBAccess {
 		db.execSQL(sql);
 		
 		return true;
+	}
+
+	public long importWordData(ContentValues values) {
+		//query
+		Cursor cursor = db.query("word_info", new String[] { "idx" }, "word=?", new String[] { values.getAsString("word") }, null, null, null);
+		try {
+			if (cursor == null || !cursor.moveToFirst()) {
+				return insertWordData(values);
+			} else {
+				return cursor.getLong(0);
+			}
+		} finally {
+			if (cursor != null) {
+				cursor.close();
+			}
+		}
+	}
+
+	private long insertWordData(ContentValues values) {
+		return db.insert("word_info", null, values);
+	}
+
+	public long importWordIndex(int dictid, ContentValues values) {
+		return db.insert("word_index_" + dictid, null, values);
+		
 	}
 
 }

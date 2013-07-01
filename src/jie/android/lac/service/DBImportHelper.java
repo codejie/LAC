@@ -10,9 +10,12 @@ import android.database.DatabaseErrorHandler;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.RemoteException;
+import android.util.Log;
 
 public class DBImportHelper {
 
+	private static final String Tag = DBImportHelper.class.getSimpleName();
+	
 	private DBAccess dbAccess = null;
 	private String importFile = null;
 	
@@ -132,11 +135,11 @@ public class DBImportHelper {
 					values.put("word", cursor.getString(1));
 					values.put("flag", cursor.getInt(2));
 					
-					Long rowid = dbAccess.importWordData(values);
+					long rowid = dbAccess.importWordData(values);
 					if (rowid != -1) {
 						importWordIndex(dictid, cursor.getInt(0), rowid);
 					} else {
-						
+						Log.e(Tag, "importWordData() failed.");
 					}
 				} while (cursor.moveToNext());
 			}
@@ -145,6 +148,32 @@ public class DBImportHelper {
 			cursor.close();
 		}
 		
-		return false;
+		return true;
+	}
+
+	private boolean importWordIndex(int dictid, int idx, long rowid) {
+		Cursor cursor = importDb.query("word_index_" + dictid, new String[] { "idx", "offset", "length", "block1" }, "word_idx=?", new String[] { String.valueOf(idx) }, null, null, null);
+		
+		try {
+			if (cursor != null && cursor.moveToFirst()) {
+				do {
+					ContentValues values = new ContentValues();
+					values.put("word_idx", rowid);
+					values.put("idx", cursor.getInt(0));
+					values.put("offset", cursor.getInt(1));
+					values.put("length", cursor.getInt(2));
+					values.put("block1", cursor.getInt(3));
+					
+					if (dbAccess.importWordIndex(dictid, values) == -1) {
+						return false;
+					}
+					
+				} while (cursor.moveToNext());
+			}
+		} finally {
+			cursor.close();
+		}
+		
+		return true;
 	}	
 }
