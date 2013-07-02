@@ -89,15 +89,21 @@ public class ServiceStub extends Access.Stub {
 			listener.onStarted(lfile);
 		}
 		
-		DBImportHelper helper = new DBImportHelper(service.getDBAccess(), lfile);
-		if (helper.init()) {
-			helper.importData(listener);
-		} else {
-			if (listener != null) {
-				listener.onFailed("import init failed.");
-			}
-			return;
+		DBImportAsyncTask task = new DBImportAsyncTask(service.getDBAccess(), lfile);
+		if (task.init()) {
+			task.setListener(listener);
+			task.execute(new String());
 		}
+		
+//		DBImportHelper helper = new DBImportHelper(service.getDBAccess(), lfile);
+//		if (helper.init()) {
+//			helper.importData(listener);
+//		} else {
+//			if (listener != null) {
+//				listener.onFailed("import init failed.");
+//			}
+//			return;
+//		}
 		
 		if (listener != null) {
 			listener.onCompleted(100);
