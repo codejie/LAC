@@ -106,7 +106,7 @@ public class ServiceStub extends Access.Stub {
 //		}
 		
 		if (listener != null) {
-			listener.onCompleted(100);
+			listener.onCompleted("Mission completed.");
 		}		
 	}
 

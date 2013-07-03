@@ -1,5 +1,16 @@
 package jie.android.lac.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import jie.android.lac.service.aidl.ImportDatabaseListener;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -14,7 +25,7 @@ public class DBImportAsyncTask extends AsyncTask<String, String, String> {
 	private static final String Tag = DBImportAsyncTask.class.getSimpleName();
 	
 	private DBAccess dbAccess = null;
-	private String importFile = null;
+	private String updateFile = null;
 	
 	private ImportDatabaseListener importListener = null;
 	
@@ -22,7 +33,7 @@ public class DBImportAsyncTask extends AsyncTask<String, String, String> {
 	
 	public DBImportAsyncTask(DBAccess dbAccess, final String importFile) {
 		this.dbAccess = dbAccess;
-		this.importFile = importFile;
+		this.updateFile = importFile;
 	}
 	
 	public void setListener(ImportDatabaseListener listener) {
@@ -31,7 +42,7 @@ public class DBImportAsyncTask extends AsyncTask<String, String, String> {
 	
 	public boolean init() {
 		try {
-			importDb = SQLiteDatabase.openDatabase(importFile, null, SQLiteDatabase.OPEN_READONLY);
+			importDb = SQLiteDatabase.openDatabase(updateFile, null, SQLiteDatabase.OPEN_READONLY);
 		} catch (SQLException e) {
 			return false;
 		}
@@ -49,7 +60,7 @@ public class DBImportAsyncTask extends AsyncTask<String, String, String> {
 		super.onProgressUpdate(values);
 		if (importListener != null) {
 			try {
-				importListener.onImported(0, values[0]);
+				importListener.onImported(values[0]);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -60,12 +71,68 @@ public class DBImportAsyncTask extends AsyncTask<String, String, String> {
 	@Override
 	protected String doInBackground(String... params) {
 		try {
-			importDictInfo();
+			StringBuffer importFile = new StringBuffer();
+			ArrayList<String> arrayFile = new ArrayList<String>();
+			
+			unfoldUpdateFile(updateFile, importFile, arrayFile);
+			importDbFile(importFile.toString());
+			copyDbFiles(arrayFile);
+			
+//			importDictInfo();
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	private boolean unfoldUpdateFile(String file, StringBuffer importFile, ArrayList<String> arrayFile) throws RemoteException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		try {
+			Document doc = factory.newDocumentBuilder().parse(file);
+			NodeList node = doc.getElementsByTagName("database");
+			if (node == null) {
+				return false;
+			}
+			importFile.append(node.item(0).getChildNodes().item(0).getNodeValue());
+			
+			node = doc.getElementsByTagName("dictonary");
+			if (node == null) {
+				return false;
+			}
+			
+			NodeList item = node.item(0).getChildNodes();
+			
+			for (int i = 0; i < item.getLength(); ++ i) {
+				Node n = item.item(i);
+				if (n.getNodeType() == Node.ELEMENT_NODE) {
+					if (n.getNodeName() == "item") {
+						arrayFile.add(n.getChildNodes().item(0).getNodeValue());
+					}
+				}
+				
+			}
+			
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return true;
+	}
+
+	private boolean importDbFile(String string) throws RemoteException {
+		return false;
+	}
+
+	private boolean copyDbFiles(ArrayList<String> arrayFile) throws RemoteException {
+		return false;
 	}
 
 	@Override
@@ -97,16 +164,16 @@ public class DBImportAsyncTask extends AsyncTask<String, String, String> {
 					try {
 						Long rowid = dbAccess.importDictInfo(values);
 						if (importListener != null) {
-							importListener.onImported(rowid.intValue(), "Dictionary Info : " + cursor.getInt(2));
+							importListener.onImported("Dictionary Info : " + cursor.getInt(2));
 						}
 						importBlockData(cursor.getInt(0));
 						if (importListener != null) {
-							importListener.onImported(rowid.intValue(), "Dictionary Block Info complete.");
+							importListener.onImported("Dictionary Block Info complete.");
 						}
 	
 						importWordData(cursor.getInt(0));
 						if (importListener != null) {
-							importListener.onImported(rowid.intValue(), "Dictionary Word Info complete.");
+							importListener.onImported("Dictionary Word Info complete.");
 						}
 					} finally {					
 						dbAccess.endTransaction(true);
@@ -138,7 +205,7 @@ public class DBImportAsyncTask extends AsyncTask<String, String, String> {
 					
 					if (dbAccess.importBlockData(dictid, values) == -1) {
 						if (importListener != null) {
-							importListener.onImported(-1, "Dictionary Block Info failed.");
+							importListener.onImported("Dictionary Block Info failed.");
 						}						
 					}
 					

@@ -12,7 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import jie.android.lac.app.Configuration;
 import jie.android.lac.fragment.HttpdFragment;
+import jie.android.lac.service.AssetsHelper;
 
 import android.os.Environment;
 import android.os.Handler;
@@ -92,22 +94,31 @@ public class HttpdServer extends NanoHTTPD {
 			if(lfile == null || lfile.equals("")) {
 				return new Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_HTML, getUriStream("err_missparameter.html"));
 			}
-			
+
 			String path = Environment.getExternalStorageDirectory() + "/tmp/lac";
 			File tgt = new File(path);
 			if (!tgt.exists()) {
 				if (!tgt.mkdirs()) {
 					Log.d(HttpdServer.Tag, "request - importfiledone - temporary directory failed : " + tgt.getAbsolutePath());
+					return new Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_HTML, getUriStream("err_missparameter.html"));					
 				}
 			}
-		    String dst = tgt.getAbsolutePath() + File.separator + "import.db";			
 			
-		    try {
-		    	copyCacheFile(lfile, dst);
-		    } catch (IOException e) {
-		    	Log.d(HttpdServer.Tag, "request - importfiledone failed : - " + dst);
-		    }
+			if (!unzipFile(lfile, path)) {
+				Log.d(HttpdServer.Tag, "request - importfiledone - unzip failed : " + lfile);
+				return new Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_HTML, getUriStream("err_missparameter.html"));
+			}
 			
+//			
+//		    String dst = tgt.getAbsolutePath() + File.separator + "import.db";			
+//			
+//		    try {
+//		    	copyCacheFile(lfile, dst);
+//		    } catch (IOException e) {
+//		    	Log.d(HttpdServer.Tag, "request - importfiledone failed : - " + dst);
+//		    }
+			
+			String dst = path + File.separator + "update.xml";
 			Log.d(HttpdServer.Tag, "request - importfiledone - " + dst);
 			Message msg = Message.obtain(HttpdServer.handler, HttpdFragment.MSG_IMPORT_DATABASE);
 			msg.getData().putString("localfile", dst);
@@ -122,6 +133,19 @@ public class HttpdServer extends NanoHTTPD {
 //			}
 //			
 			return new Response(NanoHTTPD.Response.Status.OK, NanoHTTPD.MIME_HTML, getUriStream(uri));			
+		}
+
+		private boolean unzipFile(String lfile, String path) {
+			
+			try {
+				InputStream input = new FileInputStream (new File(lfile));
+				AssetsHelper.UnzipTo(input, path, null);
+			} catch (IOException e) {
+				e.printStackTrace();			
+				return false;
+			}			
+			
+			return true;
 		}
 
 		private boolean copyCacheFile(String lfile, String dst) throws IOException {

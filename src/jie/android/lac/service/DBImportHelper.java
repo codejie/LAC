@@ -67,16 +67,16 @@ public class DBImportHelper {
 					try {
 						Long rowid = dbAccess.importDictInfo(values);
 						if (importListener != null) {
-							importListener.onImported(rowid.intValue(), "Dictionary Info : " + cursor.getInt(2));
+							importListener.onImported("Dictionary Info : " + cursor.getInt(2));
 						}
 						importBlockData(cursor.getInt(0));
 						if (importListener != null) {
-							importListener.onImported(rowid.intValue(), "Dictionary Block Info complete.");
+							importListener.onImported("Dictionary Block Info complete.");
 						}
 	
 						importWordData(cursor.getInt(0));
 						if (importListener != null) {
-							importListener.onImported(rowid.intValue(), "Dictionary Word Info complete.");
+							importListener.onImported("Dictionary Word Info complete.");
 						}
 					} finally {					
 						dbAccess.endTransaction(true);
@@ -108,7 +108,7 @@ public class DBImportHelper {
 					
 					if (dbAccess.importBlockData(dictid, values) == -1) {
 						if (importListener != null) {
-							importListener.onImported(-1, "Dictionary Block Info failed.");
+							importListener.onImported("Dictionary Block Info failed.");
 						}						
 					}
 					
