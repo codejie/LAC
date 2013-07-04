@@ -1,5 +1,6 @@
 package jie.android.lac.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -87,26 +88,32 @@ public class DBImportAsyncTask extends AsyncTask<String, String, String> {
 	}
 
 	private boolean unfoldUpdateFile(String file, StringBuffer importFile, ArrayList<String> arrayFile) throws RemoteException {
+		
+//		File f = new File(file);
+//		if (!f.exists()) {
+//			return false;
+//		}
+		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		try {
-			Document doc = factory.newDocumentBuilder().parse(file);
+			Document doc = factory.newDocumentBuilder().parse("file://" + file);
 			NodeList node = doc.getElementsByTagName("database");
 			if (node == null) {
 				return false;
 			}
 			importFile.append(node.item(0).getChildNodes().item(0).getNodeValue());
 			
-			node = doc.getElementsByTagName("dictonary");
+			node = doc.getElementsByTagName("dictionary");
 			if (node == null) {
 				return false;
 			}
 			
 			NodeList item = node.item(0).getChildNodes();
-			
+		
 			for (int i = 0; i < item.getLength(); ++ i) {
 				Node n = item.item(i);
 				if (n.getNodeType() == Node.ELEMENT_NODE) {
-					if (n.getNodeName() == "item") {
+					if (n.getNodeName().equals("item")) {
 						arrayFile.add(n.getChildNodes().item(0).getNodeValue());
 					}
 				}
